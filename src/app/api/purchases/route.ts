@@ -1,11 +1,21 @@
-import { db, isDbConfigured } from "@/db";
+import { db, hasDatabase } from "@/db";
 import { purchases } from "@/db/schema";
 import { isCourseId, isPlanId } from "@/lib/school";
-import { randomUUID } from "crypto";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  if (!hasDatabase()) {
+    return Response.json(
+      {
+        error: "STATIC_MODE",
+        message: "Серверна база недоступна — використовується демо-режим у браузері.",
+      },
+      { status: 503 },
+    );
+  }
+
   let payload: unknown;
 
   try {
@@ -34,28 +44,27 @@ export async function POST(request: Request) {
     return Response.json({ error: "Оберіть програму й тариф зі списку." }, { status: 400 });
   }
 
-  // If a PostgreSQL database is connected, persist the purchase
-  if (isDbConfigured()) {
-    try {
-      const [purchase] = await db
-        .insert(purchases)
-        .values({
-          courseId: body.courseId,
-          planId: body.planId,
-          buyerName,
-          buyerEmail,
-        })
-        .returning({ id: purchases.id });
+  try {
+    const [purchase] = await db
+      .insert(purchases)
+      .values({
+        courseId: body.courseId,
+        planId: body.planId,
+        buyerName,
+        buyerEmail,
+      })
+      .returning({ id: purchases.id });
 
-      if (purchase?.id) {
-        return Response.json({ id: purchase.id }, { status: 201 });
-      }
-    } catch (error) {
-      console.warn("Database insert failed, using fallback session ID for demo:", error);
+    if (!purchase) {
+      return Response.json({ error: "Не вдалося оформити заявку. Спробуйте ще раз." }, { status: 500 });
     }
-  }
 
-  // Fallback for Vercel/demo mode without database credentials
-  const demoPurchaseId = randomUUID();
-  return Response.json({ id: demoPurchaseId }, { status: 201 });
+    return Response.json({ id: purchase.id }, { status: 201 });
+  } catch (error) {
+    console.error("Unable to create course purchase", error);
+    return Response.json(
+      { error: "Сервіс тимчасово недоступний. Спробуйте, будь ласка, трохи пізніше." },
+      { status: 500 },
+    );
+  }
 }

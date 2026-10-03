@@ -1,61 +1,53 @@
-import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
+/**
+ * Database client is fully lazy so `next build` on Vercel succeeds
+ * even when DATABASE_URL is not set.
+ *
+ * - Import time: never throws, never opens a connection.
+ * - Request time: server routes check `hasDatabase()` first.
+ * - If the database is used without DATABASE_URL, a clear error is thrown.
+ */
+export function hasDatabase(): boolean {
+  return Boolean(process.env.DATABASE_URL);
+}
+
 const globalForDb = globalThis as typeof globalThis & {
-  __arenaNextJsPostgresqlPool?: Pool;
-  __arenaNextJsPostgresqlDb?: NodePgDatabase<Record<string, never>>;
+  __empirePool?: Pool;
+  __empireDb?: ReturnType<typeof drizzle>;
 };
 
-export function getDatabaseUrl(): string | undefined {
-  return process.env.DATABASE_URL;
-}
-
-export function isDbConfigured(): boolean {
-  const url = getDatabaseUrl();
-  return Boolean(url && url.trim().length > 0);
-}
-
-export function getPool(): Pool | null {
-  const url = getDatabaseUrl();
-  if (!url) return null;
-  if (!globalForDb.__arenaNextJsPostgresqlPool) {
-    globalForDb.__arenaNextJsPostgresqlPool = new Pool({
-      connectionString: url,
-    });
+function getDatabase(): ReturnType<typeof drizzle> {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    throw new Error("DATABASE_URL is required");
   }
-  return globalForDb.__arenaNextJsPostgresqlPool;
-}
-
-export function getDb(): NodePgDatabase<Record<string, never>> | null {
-  const currentPool = getPool();
-  if (!currentPool) return null;
-  if (!globalForDb.__arenaNextJsPostgresqlDb) {
-    globalForDb.__arenaNextJsPostgresqlDb = drizzle(currentPool);
-  }
-  return globalForDb.__arenaNextJsPostgresqlDb;
-}
-
-export const pool: Pool = new Proxy({} as Pool, {
-  get(_target, prop) {
-    const realPool = getPool();
-    if (!realPool) {
-      throw new Error("DATABASE_URL is not configured in environment variables.");
+  if (!globalForDb.__empireDb) {
+    if (!globalForDb.__empirePool) {
+      globalForDb.__empirePool = new Pool({ connectionString: databaseUrl });
     }
-    const val = (realPool as unknown as Record<string | symbol, unknown>)[prop];
-    return typeof val === "function" ? val.bind(realPool) : val;
+    globalForDb.__empireDb = drizzle(globalForDb.__empirePool);
+  }
+  return globalForDb.__empireDb;
+}
+
+type DbClient = ReturnType<typeof drizzle>;
+
+/**
+ * A proxy that looks like the drizzle client but only connects
+ * on the first actual query. Accessing any property triggers lazy init.
+ */
+export const db: DbClient = new Proxy({} as DbClient, {
+  get(_target, prop, receiver) {
+    const real = getDatabase();
+    const value = Reflect.get(real as unknown as Record<PropertyKey, unknown>, prop, receiver);
+    return typeof value === "function" ? (value as (...a: never[]) => unknown).bind(real) : value;
+  },
+  apply(_target, _thisArg, args) {
+    const real = getDatabase() as unknown as (...a: unknown[]) => unknown;
+    return real(...args);
   },
 });
 
-export const db: NodePgDatabase<Record<string, never>> = new Proxy(
-  {} as NodePgDatabase<Record<string, never>>,
-  {
-    get(_target, prop) {
-      const realDb = getDb();
-      if (!realDb) {
-        throw new Error("DATABASE_URL is not configured in environment variables.");
-      }
-      const val = (realDb as unknown as Record<string | symbol, unknown>)[prop];
-      return typeof val === "function" ? val.bind(realDb) : val;
-    },
-  },
-);
+export const pool: Pool | null = null;
