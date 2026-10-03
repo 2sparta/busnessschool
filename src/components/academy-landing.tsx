@@ -1,12 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/icon";
-import { withBasePath } from "@/lib/base-path";
-import { createLocalPurchase } from "@/lib/demo-store";
+import { getAssetPath } from "@/lib/assets";
 import {
   courses,
   getCourse,
@@ -52,19 +50,19 @@ const benefits = [
 
 const testimonials = [
   {
-    initials: "ІП",
+    image: "/images/avatar-igor.jpg",
     name: "Ігор Петренко",
     role: "випускник програми «Підприємець з нуля»",
     text: "За 12 тижнів я впорядкував бізнес-ідею, запустив перший продаж і нарешті зрозумів, що робити далі.",
   },
   {
-    initials: "АК",
+    image: "/images/avatar-anastasia.jpg",
     name: "Анастасія Кравченко",
     role: "випускниця програми «Маркетинг та продажі»",
     text: "Найцінніше — практичні інструменти й підтримка ментора. Нову стратегію ми одразу тестували в роботі.",
   },
   {
-    initials: "МС",
+    image: "/images/avatar-maksym.jpg",
     name: "Максим Сидоренко",
     role: "випускник програми «Управління та лідерство»",
     text: "Команда стала самостійнішою, а в мене з’явився час на розвиток компанії. Результат відчув майже одразу.",
@@ -152,68 +150,59 @@ export default function AcademyLanding() {
     if (!order) return;
 
     const formData = new FormData(event.currentTarget);
-    const name = String(formData.get("name") ?? "").trim();
-    const email = String(formData.get("email") ?? "").trim();
     setFormError("");
     setIsSubmitting(true);
 
-    const openLocalCabinet = () => {
-      try {
-        const local = createLocalPurchase({
-          courseId: order.courseId,
-          planId: order.planId,
-          buyerName: name,
-          buyerEmail: email.toLowerCase(),
-        });
-        router.push(`/cabinet/${local.id}`);
-        router.refresh();
-      } catch {
-        setFormError("Не вдалося створити кабінет у цьому браузері. Спробуйте ще раз.");
-        setIsSubmitting(false);
-      }
-    };
+    const buyerName = String(formData.get("name") || "").trim();
+    const buyerEmail = String(formData.get("email") || "").trim();
+    let purchaseId = `purchase-${Date.now()}`;
 
     try {
-      const response = await fetch(withBasePath("/api/purchases"), {
+      const response = await fetch("/api/purchases", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
-          email,
+          name: buyerName,
+          email: buyerEmail,
           courseId: order.courseId,
           planId: order.planId,
         }),
       });
-      const result = (await response.json().catch(() => ({}))) as {
-        id?: unknown;
-        error?: unknown;
-      };
-
-      if (response.status === 503 && result.error === "STATIC_MODE") {
-        // Vercel without DATABASE_URL or static hosting: keep everything in the browser.
-        openLocalCabinet();
-        return;
+      if (response.ok) {
+        const result = (await response.json()) as { id?: unknown };
+        if (typeof result.id === "string") {
+          purchaseId = result.id;
+        }
       }
-
-      if (!response.ok) {
-        throw new Error(typeof result.error === "string" ? result.error : "Не вдалося оформити заявку.");
-      }
-      if (typeof result.id !== "string") {
-        throw new Error("Заявку збережено, але посилання на кабінет не отримано. Спробуйте ще раз.");
-      }
-
-      router.push(`/cabinet/${result.id}`);
-      router.refresh();
-    } catch (error) {
-      // Offline / static hosting fallback: no server, still open a demo cabinet.
-      if (error instanceof TypeError) {
-        openLocalCabinet();
-        return;
-      }
-      setFormError(error instanceof Error ? error.message : "Сталася помилка. Спробуйте ще раз.");
-    } finally {
-      setIsSubmitting(false);
+    } catch {
+      // In static deployment (e.g. GitHub Pages without server API routes),
+      // we gracefully proceed using client-side order creation.
     }
+
+    try {
+      window.localStorage.setItem(
+        "empire_last_purchase",
+        JSON.stringify({
+          id: purchaseId,
+          courseId: order.courseId,
+          planId: order.planId,
+          buyerName,
+          buyerEmail,
+          createdAt: new Date().toISOString(),
+        }),
+      );
+    } catch {
+      // Ignore localStorage issues
+    }
+
+    const targetUrl = `/cabinet?id=${encodeURIComponent(purchaseId)}&plan=${encodeURIComponent(
+      order.planId,
+    )}&course=${encodeURIComponent(order.courseId)}&name=${encodeURIComponent(
+      buyerName,
+    )}&email=${encodeURIComponent(buyerEmail)}`;
+
+    router.push(targetUrl);
+    setIsSubmitting(false);
   };
 
   const closeOrder = () => {
@@ -254,14 +243,7 @@ export default function AcademyLanding() {
       </header>
 
       <section className="hero-section" aria-labelledby="hero-title">
-        <Image
-          className="hero-photo"
-          src="/images/hero-mentor.jpg"
-          alt="Ментор Empire Business School у діловому костюмі"
-          fill
-          priority
-          sizes="100vw"
-        />
+        <img className="hero-photo" src={getAssetPath("/images/hero-mentor.jpg")} alt="" fetchPriority="high" />
         <div className="hero-shade" />
         <div className="container hero-inner">
           <div className="hero-copy">
@@ -313,12 +295,7 @@ export default function AcademyLanding() {
             {courses.map((course, index) => (
               <article className="course-card" key={course.id}>
                 <div className="course-image-wrap">
-                  <Image
-                    src={course.image}
-                    alt={course.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 850px) 50vw, 25vw"
-                  />
+                  <img src={getAssetPath(course.image)} alt="" loading="lazy" />
                   <span className="course-number">0{index + 1}</span>
                 </div>
                 <div className="course-card-content">
@@ -351,13 +328,7 @@ export default function AcademyLanding() {
             <a className="button button-outline" href="#benefits">Дізнатися більше <Icon name="arrow" size={16} /></a>
           </div>
           <div className="about-photo-wrap">
-            <Image
-              src="/images/masterclass.jpg"
-              alt="Бізнес-ментор проводить майстер-клас для студентів"
-              width={880}
-              height={640}
-              sizes="(max-width: 640px) 100vw, 50vw"
-            />
+            <img src={getAssetPath("/images/masterclass.jpg")} alt="Бізнес-ментор проводить майстер-клас для студентів" loading="lazy" />
             <div className="about-photo-caption"><span className="caption-mark"><Icon name="landmark" size={22} /></span><span><strong>Практика в центрі.</strong><small>Люди, досвід, ваші наступні кроки.</small></span></div>
             <span className="about-photo-number">EBS / 2026</span>
           </div>
@@ -399,8 +370,16 @@ export default function AcademyLanding() {
             {testimonials.map((review) => (
               <article className="testimonial-card" key={review.name}>
                 <div className="testimonial-top">
-                  <span className="avatar-initials">{review.initials}</span>
-                  <div><strong>{review.name}</strong><span>{review.role}</span></div>
+                  <img
+                    className="avatar-photo"
+                    src={getAssetPath(review.image)}
+                    alt={review.name}
+                    loading="lazy"
+                  />
+                  <div>
+                    <strong>{review.name}</strong>
+                    <span>{review.role}</span>
+                  </div>
                 </div>
                 <div className="testimonial-stars" aria-label="5 зірок">★★★★★</div>
                 <p>«{review.text}»</p>
@@ -461,16 +440,6 @@ export default function AcademyLanding() {
             ))}
           </div>
           <div className="pricing-footnote"><Icon name="shield" size={17} /><span>Жодних списань: покупка демонстраційна, оплата на сайті не підключена.</span></div>
-          <div className="demo-cabinets">
-            <span className="demo-cabinets-label">Хочете одразу зазирнути всередину?</span>
-            <div className="demo-cabinets-links">
-              <a href={withBasePath("/cabinet/demo-start")}>Демо: Старт</a>
-              <span>·</span>
-              <a href={withBasePath("/cabinet/demo-mentorship")}>Демо: Менторство</a>
-              <span>·</span>
-              <a href={withBasePath("/cabinet/demo-vip")}>Демо: VIP</a>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -494,12 +463,11 @@ export default function AcademyLanding() {
       </section>
 
       <section className="final-cta" id="contacts">
-        <Image
-          src="/images/masterclass.jpg"
-          alt=""
-          fill
-          sizes="100vw"
-          aria-hidden="true"
+        <img
+          className="final-cta-bg"
+          src={getAssetPath("/images/cta-architecture.jpg")}
+          alt="Empire Business School"
+          loading="lazy"
         />
         <div className="final-cta-shade" />
         <div className="container final-cta-inner">
