@@ -1,0 +1,480 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import type { FormEvent } from "react";
+import { useEffect, useState } from "react";
+import { Icon } from "@/components/icon";
+import {
+  courses,
+  getCourse,
+  getPlan,
+  isCourseId,
+  plans,
+  type CourseId,
+  type PlanId,
+} from "@/lib/school";
+
+type OrderDetails = {
+  courseId: CourseId;
+  planId: PlanId;
+};
+
+const benefits = [
+  {
+    icon: "school",
+    title: "Актуальні програми",
+    text: "Навчання, створене на реальних завданнях і потребах українського бізнесу.",
+  },
+  {
+    icon: "users",
+    title: "Експертні ментори",
+    text: "Поруч практики, які щодня приймають рішення й розвивають власні команди.",
+  },
+  {
+    icon: "briefcase",
+    title: "Практика та кейси",
+    text: "Відпрацьовуйте нові навички на своєму проєкті, а не на абстрактних прикладах.",
+  },
+  {
+    icon: "network",
+    title: "Спільнота однодумців",
+    text: "Знайомтеся, діліться досвідом і зростайте разом із підприємцями.",
+  },
+  {
+    icon: "rocket",
+    title: "Підтримка після навчання",
+    text: "Зберігайте доступ до матеріалів і повертайтеся до них у потрібний момент.",
+  },
+] as const;
+
+const testimonials = [
+  {
+    initials: "ІП",
+    name: "Ігор Петренко",
+    role: "випускник програми «Підприємець з нуля»",
+    text: "За 12 тижнів я впорядкував бізнес-ідею, запустив перший продаж і нарешті зрозумів, що робити далі.",
+  },
+  {
+    initials: "АК",
+    name: "Анастасія Кравченко",
+    role: "випускниця програми «Маркетинг та продажі»",
+    text: "Найцінніше — практичні інструменти й підтримка ментора. Нову стратегію ми одразу тестували в роботі.",
+  },
+  {
+    initials: "МС",
+    name: "Максим Сидоренко",
+    role: "випускник програми «Управління та лідерство»",
+    text: "Команда стала самостійнішою, а в мене з’явився час на розвиток компанії. Результат відчув майже одразу.",
+  },
+] as const;
+
+const questions = [
+  {
+    question: "Чи потрібен досвід, щоб почати навчання?",
+    answer:
+      "Ні. Програми підійдуть як тим, хто тільки планує власну справу, так і підприємцям, які хочуть систематизувати вже діючий бізнес.",
+  },
+  {
+    question: "Як проходить навчання?",
+    answer:
+      "Усі основні уроки доступні онлайн у вашому кабінеті. Залежно від тарифу до навчання додаються живі зустрічі з ментором, розбір кейсів і персональний зворотний зв’язок.",
+  },
+  {
+    question: "Чи можна обрати різні тарифи для різних програм?",
+    answer:
+      "Так. Тариф обирається окремо для програми. У формі запису перед оформленням можна змінити курс або повернутися до переліку програм.",
+  },
+  {
+    question: "Чи є оплата на сайті?",
+    answer:
+      "Ні. Це демонстраційне оформлення без списання коштів. Після заявки одразу відкривається особистий кабінет із навчальними матеріалами та інформацією відповідно до тарифу.",
+  },
+] as const;
+
+function Brand({ onClick }: { onClick?: () => void }) {
+  return (
+    <a className="brand" href="#home" onClick={onClick} aria-label="Empire Business School — на головну">
+      <span className="brand-mark">
+        <Icon name="landmark" size={27} />
+      </span>
+      <span className="brand-wordmark">
+        <strong>EMPIRE</strong>
+        <span>BUSINESS SCHOOL</span>
+      </span>
+    </a>
+  );
+}
+
+export default function AcademyLanding() {
+  const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedCourseId, setSelectedCourseId] = useState<CourseId>(courses[0].id);
+  const [order, setOrder] = useState<OrderDetails | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
+
+  const selectedCourse = getCourse(selectedCourseId) ?? courses[0];
+  const orderCourse = order ? getCourse(order.courseId) : undefined;
+  const orderPlan = order ? getPlan(order.planId) : undefined;
+
+  useEffect(() => {
+    if (!order) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !isSubmitting) setOrder(null);
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [order, isSubmitting]);
+
+  const chooseCourse = (courseId: CourseId) => {
+    setSelectedCourseId(courseId);
+    setMobileMenuOpen(false);
+    document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const openOrder = (planId: PlanId, courseId: CourseId = selectedCourseId) => {
+    setFormError("");
+    setOrder({ planId, courseId });
+  };
+
+  const handlePurchase = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!order) return;
+
+    const formData = new FormData(event.currentTarget);
+    setFormError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/purchases", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          email: formData.get("email"),
+          courseId: order.courseId,
+          planId: order.planId,
+        }),
+      });
+      const result = (await response.json()) as { id?: unknown; error?: unknown };
+
+      if (!response.ok) {
+        throw new Error(typeof result.error === "string" ? result.error : "Не вдалося оформити заявку.");
+      }
+      if (typeof result.id !== "string") {
+        throw new Error("Заявку збережено, але посилання на кабінет не отримано. Спробуйте ще раз.");
+      }
+
+      router.push(`/cabinet/${result.id}`);
+      router.refresh();
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : "Сталася помилка. Спробуйте ще раз.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const closeOrder = () => {
+    if (!isSubmitting) setOrder(null);
+  };
+
+  return (
+    <main className="page-frame">
+      <header className="site-header" id="home">
+        <div className="container header-inner">
+          <Brand onClick={() => setMobileMenuOpen(false)} />
+
+          <button
+            className="menu-toggle"
+            type="button"
+            aria-label={mobileMenuOpen ? "Закрити меню" : "Відкрити меню"}
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen((open) => !open)}
+          >
+            <Icon name={mobileMenuOpen ? "close" : "menu"} size={23} />
+          </button>
+
+          <nav className={`main-nav${mobileMenuOpen ? " is-open" : ""}`} aria-label="Основна навігація">
+            <a href="#home" onClick={() => setMobileMenuOpen(false)}>Головна</a>
+            <a href="#programs" onClick={() => setMobileMenuOpen(false)}>Програми</a>
+            <a href="#about" onClick={() => setMobileMenuOpen(false)}>Про нас</a>
+            <a href="#reviews" onClick={() => setMobileMenuOpen(false)}>Відгуки</a>
+            <a href="#contacts" onClick={() => setMobileMenuOpen(false)}>Контакти</a>
+            <button className="button button-gold nav-mobile-cta" type="button" onClick={() => { setMobileMenuOpen(false); openOrder("mentorship"); }}>
+              Записатися <Icon name="arrow" size={16} />
+            </button>
+          </nav>
+
+          <button className="button button-gold header-cta" type="button" onClick={() => openOrder("mentorship")}>
+            Записатися <Icon name="arrow" size={16} />
+          </button>
+        </div>
+      </header>
+
+      <section className="hero-section" aria-labelledby="hero-title">
+        <img className="hero-photo" src="/images/hero-mentor.jpg" alt="" fetchPriority="high" />
+        <div className="hero-shade" />
+        <div className="container hero-inner">
+          <div className="hero-copy">
+            <p className="eyebrow"><span className="eyebrow-line" /> Бізнес-школа нового покоління</p>
+            <h1 id="hero-title">СТВОРИ СВОЄ<br /><span>ДОСЯГНЕННЯ</span></h1>
+            <p className="hero-description">
+              Практичне навчання, досвід менторів і середовище людей, які діють. Перетвори сміливу ідею на сильний бізнес.
+            </p>
+            <div className="hero-highlights">
+              <div><Icon name="trend" size={24} /><span>Практичні<br />кейси та проєкти</span></div>
+              <div><Icon name="users" size={24} /><span>Досвідчені<br />ментори</span></div>
+              <div><Icon name="shield" size={24} /><span>Сильна<br />спільнота</span></div>
+              <div><Icon name="school" size={24} /><span>Підтримка<br />після навчання</span></div>
+            </div>
+            <button className="button button-gold hero-cta" type="button" onClick={() => chooseCourse(selectedCourseId)}>
+              Обрати програму <Icon name="arrow" size={17} />
+            </button>
+          </div>
+          <aside className="hero-quote">
+            <Icon name="quote" size={26} />
+            <p>Бізнес — це не про гроші. Це про свободу, можливості та вплив.</p>
+            <span>Дмитро Коваленко</span>
+            <small>Засновник Empire Business School</small>
+          </aside>
+          <div className="hero-index"><span>01</span><i /> 04 — РОЗВИВАЙ СВОЄ</div>
+        </div>
+      </section>
+
+      <section className="stats-band" aria-label="Empire Business School у цифрах">
+        <div className="container stats-grid">
+          <div className="stat-item"><strong>5<span>+</span></strong><span>років досвіду</span></div>
+          <div className="stat-item"><strong>1 200<span>+</span></strong><span>випускників</span></div>
+          <div className="stat-item"><strong>95<span>%</span></strong><span>задоволених студентів</span></div>
+          <div className="stat-item"><strong>20<span>+</span></strong><span>практичних програм</span></div>
+        </div>
+      </section>
+
+      <section className="programs-section section-dark" id="programs" aria-labelledby="programs-title">
+        <div className="container">
+          <div className="section-heading section-heading-dark">
+            <div>
+              <p className="eyebrow"><span className="eyebrow-line" /> Наші програми</p>
+              <h2 id="programs-title">ОБЕРИ СВІЙ ШЛЯХ</h2>
+            </div>
+            <p className="section-heading-note">Знайди свою точку зростання —<br />ми допоможемо прокласти маршрут.</p>
+          </div>
+
+          <div className="course-grid">
+            {courses.map((course, index) => (
+              <article className="course-card" key={course.id}>
+                <div className="course-image-wrap">
+                  <img src={course.image} alt="" loading="lazy" />
+                  <span className="course-number">0{index + 1}</span>
+                </div>
+                <div className="course-card-content">
+                  <p className="course-category">{course.category}</p>
+                  <h3>{course.title}</h3>
+                  <p className="course-description">{course.description}</p>
+                  <div className="course-meta">
+                    <span><Icon name="clock" size={15} /> {course.duration}</span>
+                    <i />
+                    <span>Онлайн / офлайн</span>
+                  </div>
+                  <button className="round-arrow" type="button" aria-label={`Обрати програму «${course.title}»`} onClick={() => chooseCourse(course.id)}>
+                    <Icon name="arrow" size={18} />
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="programs-footer"><span>01 — 04</span><span className="programs-footer-line" /><span>ЗНАЙДИ СВІЙ НАПРЯМ</span></div>
+        </div>
+      </section>
+
+      <section className="about-section" id="about" aria-labelledby="about-title">
+        <div className="container about-grid">
+          <div className="about-copy">
+            <p className="eyebrow eyebrow-dark"><span className="eyebrow-line" /> Про нас</p>
+            <h2 id="about-title">EMPIRE BUSINESS SCHOOL —<br /><span>БІЛЬШЕ, НІЖ НАВЧАННЯ</span></h2>
+            <p>Ми — команда підприємців, менторів і викладачів, які щодня створюють бізнес. Тому навчаємо не теорії заради теорії, а рішенням, що працюють у реальному житті.</p>
+            <p className="about-note"><Icon name="spark" size={18} /> Кожен модуль — маленький крок до великої мети.</p>
+            <a className="button button-outline" href="#benefits">Дізнатися більше <Icon name="arrow" size={16} /></a>
+          </div>
+          <div className="about-photo-wrap">
+            <img src="/images/masterclass.jpg" alt="Бізнес-ментор проводить майстер-клас для студентів" loading="lazy" />
+            <div className="about-photo-caption"><span className="caption-mark"><Icon name="landmark" size={22} /></span><span><strong>Практика в центрі.</strong><small>Люди, досвід, ваші наступні кроки.</small></span></div>
+            <span className="about-photo-number">EBS / 2026</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="benefits-section section-dark" id="benefits" aria-labelledby="benefits-title">
+        <div className="container">
+          <div className="section-heading section-heading-dark benefits-heading">
+            <div>
+              <p className="eyebrow"><span className="eyebrow-line" /> Переваги навчання</p>
+              <h2 id="benefits-title">ЧОМУ ОБИРАЮТЬ НАС</h2>
+            </div>
+            <span className="section-count">01 / EMPIRE APPROACH</span>
+          </div>
+          <div className="benefits-grid">
+            {benefits.map((benefit, index) => (
+              <article className="benefit-card" key={benefit.title}>
+                <span className="benefit-index">0{index + 1}</span>
+                <Icon name={benefit.icon} size={31} />
+                <h3>{benefit.title}</h3>
+                <p>{benefit.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="reviews-section" id="reviews" aria-labelledby="reviews-title">
+        <div className="container">
+          <div className="section-heading section-heading-light">
+            <div>
+              <p className="eyebrow eyebrow-dark"><span className="eyebrow-line" /> Відгуки</p>
+              <h2 id="reviews-title">ЩО КАЖУТЬ НАШІ ВИПУСКНИКИ</h2>
+            </div>
+            <span className="reviews-rating"><strong>4.9</strong> / 5 <span>★★★★★</span></span>
+          </div>
+          <div className="testimonial-grid">
+            {testimonials.map((review) => (
+              <article className="testimonial-card" key={review.name}>
+                <div className="testimonial-top">
+                  <span className="avatar-initials">{review.initials}</span>
+                  <div><strong>{review.name}</strong><span>{review.role}</span></div>
+                </div>
+                <div className="testimonial-stars" aria-label="5 зірок">★★★★★</div>
+                <p>«{review.text}»</p>
+                <span className="testimonial-mark"><Icon name="quote" size={20} /></span>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="pricing-section section-dark" id="pricing" aria-labelledby="pricing-title">
+        <div className="pricing-glow" />
+        <div className="container pricing-inner">
+          <div className="section-heading section-heading-dark pricing-heading">
+            <div>
+              <p className="eyebrow"><span className="eyebrow-line" /> Інвестиція у себе</p>
+              <h2 id="pricing-title">ОБЕРИ СВІЙ ФОРМАТ</h2>
+              <p className="pricing-lead">Твоя ціль визначає маршрут. Обери підтримку,<br className="desktop-break" /> яка потрібна саме тобі.</p>
+            </div>
+            <div className="pricing-program-select">
+              <label htmlFor="course-picker">Програма навчання</label>
+              <select
+                id="course-picker"
+                value={selectedCourseId}
+                onChange={(event) => {
+                  if (isCourseId(event.target.value)) setSelectedCourseId(event.target.value);
+                }}
+              >
+                {courses.map((course) => <option value={course.id} key={course.id}>{course.title}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="pricing-grid">
+            {plans.map((plan) => (
+              <article className={`price-card${plan.featured ? " price-card-featured" : ""}`} key={plan.id}>
+                {plan.featured && <div className="popular-ribbon"><Icon name="spark" size={14} /> НАЙЧАСТІШЕ ОБИРАЮТЬ</div>}
+                <div className="price-card-top">
+                  <span className="price-label">{plan.subtitle}</span>
+                  <h3>{plan.name}</h3>
+                  <p>{plan.description}</p>
+                </div>
+                <ul className="plan-benefits">
+                  {plan.benefits.map((benefit) => (
+                    <li key={benefit}><span className="check-mark"><Icon name="check" size={13} /></span><span>{benefit}</span></li>
+                  ))}
+                </ul>
+                <div className="price-card-bottom">
+                  <div className="price-value"><strong>{new Intl.NumberFormat("uk-UA").format(plan.amount)} <small>₴</small></strong><del>{new Intl.NumberFormat("uk-UA").format(plan.compareAt)} ₴</del></div>
+                  <span className="price-caption">разова вартість навчання</span>
+                  <button className={`button ${plan.featured ? "button-gold" : "button-dark-outline"} price-button`} type="button" onClick={() => openOrder(plan.id)}>
+                    Обрати тариф <Icon name="arrow" size={16} />
+                  </button>
+                  <span className="price-note">Демо-запис без оплати <span>·</span> кабінет одразу</span>
+                </div>
+                {plan.featured && <span className="price-discount">−29%</span>}
+              </article>
+            ))}
+          </div>
+          <div className="pricing-footnote"><Icon name="shield" size={17} /><span>Жодних списань: покупка демонстраційна, оплата на сайті не підключена.</span></div>
+        </div>
+      </section>
+
+      <section className="faq-section" aria-labelledby="faq-title">
+        <div className="container faq-grid">
+          <div className="faq-intro">
+            <p className="eyebrow eyebrow-dark"><span className="eyebrow-line" /> Залишилися питання?</p>
+            <h2 id="faq-title">ПОЧНИ З<br />ВПЕВНЕНОГО КРОКУ</h2>
+            <p>Ми зібрали відповіді на найчастіші запитання про програми, формат і запис.</p>
+            <button className="button button-outline" type="button" onClick={() => openOrder("mentorship")}>Порадитися з нами <Icon name="arrow" size={16} /></button>
+          </div>
+          <div className="faq-list">
+            {questions.map((item, index) => (
+              <details className="faq-item" key={item.question} open={index === 0}>
+                <summary><span>{item.question}</span><span className="faq-toggle"><Icon name="chevron" size={17} /></span></summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="final-cta" id="contacts">
+        <img src="/images/masterclass.jpg" alt="" loading="lazy" />
+        <div className="final-cta-shade" />
+        <div className="container final-cta-inner">
+          <div><p className="eyebrow"><span className="eyebrow-line" /> Твій наступний крок</p><h2>ТВІЙ БІЗНЕС-ПОТЕНЦІАЛ<br />ПОЧИНАЄТЬСЯ ТУТ</h2></div>
+          <p>Залиш заявку — і обери програму,<br />що наблизить тебе до результату.</p>
+          <button className="button button-gold" type="button" onClick={() => openOrder("mentorship")}>Записатися на програму <Icon name="arrow" size={16} /></button>
+        </div>
+      </section>
+
+      <footer className="site-footer">
+        <div className="container footer-main">
+          <div className="footer-brand-wrap"><Brand /><p>Освіта. Люди. Можливості.</p></div>
+          <nav className="footer-nav" aria-label="Навігація внизу сторінки">
+            <a href="#home">Головна</a><a href="#programs">Програми</a><a href="#about">Про нас</a><a href="#reviews">Відгуки</a><a href="#contacts">Контакти</a>
+          </nav>
+          <div className="footer-socials" aria-label="Соціальні мережі"><a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">ig</a><a href="https://t.me" target="_blank" rel="noreferrer" aria-label="Telegram">tg</a><a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube">▶</a></div>
+        </div>
+        <div className="container footer-bottom"><span>© 2026 Empire Business School</span><span>Створено для тих, хто діє.</span><a href="#home">На початок ↑</a></div>
+      </footer>
+
+      {order && orderCourse && orderPlan && (
+        <div className="modal-backdrop" onClick={(event) => { if (event.target === event.currentTarget) closeOrder(); }}>
+          <section className="order-modal" role="dialog" aria-modal="true" aria-labelledby="order-title">
+            <button className="modal-close" type="button" aria-label="Закрити форму" onClick={closeOrder} disabled={isSubmitting}><Icon name="close" size={20} /></button>
+            <div className="modal-emblem"><Icon name="landmark" size={25} /></div>
+            <p className="eyebrow eyebrow-dark"><span className="eyebrow-line" /> Демонстраційний запис</p>
+            <h2 id="order-title">ТВІЙ НАСТУПНИЙ<br />КРОК — СЮДИ</h2>
+            <div className="order-summary"><span>{orderCourse.title}<small>Тариф «{orderPlan.name}» · {new Intl.NumberFormat("uk-UA").format(orderPlan.amount)} ₴</small></span><span><Icon name="check" size={18} /></span></div>
+            <p className="modal-note">Залиш контакти — ми створимо навчальний кабінет. Оплата на сайті не підключена.</p>
+            <form className="order-form" onSubmit={handlePurchase}>
+              <label htmlFor="buyer-name">Ваше ім’я</label>
+              <input id="buyer-name" name="name" autoComplete="name" placeholder="Наприклад, Олександр" minLength={2} maxLength={100} required />
+              <label htmlFor="buyer-email">Електронна пошта</label>
+              <input id="buyer-email" name="email" type="email" autoComplete="email" placeholder="name@example.com" maxLength={180} required />
+              {formError && <p className="form-error" role="alert">{formError}</p>}
+              <button className="button button-gold modal-submit" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Готуємо ваш кабінет…" : "Створити кабінет"}
+                {!isSubmitting && <Icon name="arrow" size={16} />}
+              </button>
+              <span className="form-privacy"><Icon name="shield" size={14} /> Дані потрібні лише для створення демонстраційного кабінету.</span>
+            </form>
+          </section>
+        </div>
+      )}
+    </main>
+  );
+}
