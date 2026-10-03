@@ -1,15 +1,8 @@
-import { db, hasDatabase } from "@/db";
+import { db } from "@/db";
 import { purchases } from "@/db/schema";
 import { isCourseId, isPlanId } from "@/lib/school";
 
 export async function POST(request: Request) {
-  if (!hasDatabase()) {
-    return Response.json(
-      { error: "STATIC_MODE", message: "Серверна база недоступна — використовується демо-режим у браузері." },
-      { status: 503 },
-    );
-  }
-
   let payload: unknown;
 
   try {
