@@ -233,6 +233,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .price-discount { position: absolute; right: -12px; bottom: 102px; width: 43px; height: 43px; display: grid; place-items: center; border: 1px solid rgba(223,197,149,.6); border-radius: 50%; color: #e7d3ab; background: #171916; font-size: 10px; }
 .pricing-footnote { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 27px; color: rgba(242,239,230,.63); font-size: 9px; }
 .pricing-footnote svg { color: var(--gold); }
+.demo-cabinets { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 14px; text-align: center; }
+.demo-cabinets-label { color: rgba(242,239,230,.55); font-size: 9px; }
+.demo-cabinets-links { display: flex; align-items: center; gap: 10px; font-size: 10px; }
+.demo-cabinets-links a { color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px; }
+.demo-cabinets-links a:hover { color: #f1d9aa; }
+.demo-cabinets-links span { color: rgba(242,239,230,.35); }
 
 .faq-section { padding: 84px 0 87px; background: #f8f6f1; }
 .faq-grid { display: grid; grid-template-columns: .78fr 1.22fr; gap: 80px; }

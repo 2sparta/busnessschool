@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/icon";
+import { withBasePath } from "@/lib/base-path";
+import { createLocalPurchase } from "@/lib/demo-store";
 import {
   courses,
   getCourse,
@@ -149,21 +151,48 @@ export default function AcademyLanding() {
     if (!order) return;
 
     const formData = new FormData(event.currentTarget);
+    const name = String(formData.get("name") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
     setFormError("");
     setIsSubmitting(true);
 
+    const openLocalCabinet = () => {
+      try {
+        const local = createLocalPurchase({
+          courseId: order.courseId,
+          planId: order.planId,
+          buyerName: name,
+          buyerEmail: email.toLowerCase(),
+        });
+        router.push(`/cabinet/${local.id}`);
+        router.refresh();
+      } catch {
+        setFormError("Не вдалося створити кабінет у цьому браузері. Спробуйте ще раз.");
+        setIsSubmitting(false);
+      }
+    };
+
     try {
-      const response = await fetch("/api/purchases", {
+      const response = await fetch(withBasePath("/api/purchases"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: formData.get("name"),
-          email: formData.get("email"),
+          name,
+          email,
           courseId: order.courseId,
           planId: order.planId,
         }),
       });
-      const result = (await response.json()) as { id?: unknown; error?: unknown };
+      const result = (await response.json().catch(() => ({}))) as {
+        id?: unknown;
+        error?: unknown;
+      };
+
+      if (response.status === 503 && result.error === "STATIC_MODE") {
+        // Vercel without DATABASE_URL or static hosting: keep everything in the browser.
+        openLocalCabinet();
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(typeof result.error === "string" ? result.error : "Не вдалося оформити заявку.");
@@ -175,6 +204,11 @@ export default function AcademyLanding() {
       router.push(`/cabinet/${result.id}`);
       router.refresh();
     } catch (error) {
+      // Offline / static hosting fallback: no server, still open a demo cabinet.
+      if (error instanceof TypeError) {
+        openLocalCabinet();
+        return;
+      }
       setFormError(error instanceof Error ? error.message : "Сталася помилка. Спробуйте ще раз.");
     } finally {
       setIsSubmitting(false);
@@ -219,7 +253,7 @@ export default function AcademyLanding() {
       </header>
 
       <section className="hero-section" aria-labelledby="hero-title">
-        <img className="hero-photo" src="/images/hero-mentor.jpg" alt="" fetchPriority="high" />
+        <img className="hero-photo" src={withBasePath("/images/hero-mentor.jpg")} alt="" fetchPriority="high" />
         <div className="hero-shade" />
         <div className="container hero-inner">
           <div className="hero-copy">
@@ -271,7 +305,7 @@ export default function AcademyLanding() {
             {courses.map((course, index) => (
               <article className="course-card" key={course.id}>
                 <div className="course-image-wrap">
-                  <img src={course.image} alt="" loading="lazy" />
+                  <img src={withBasePath(course.image)} alt="" loading="lazy" />
                   <span className="course-number">0{index + 1}</span>
                 </div>
                 <div className="course-card-content">
@@ -304,7 +338,7 @@ export default function AcademyLanding() {
             <a className="button button-outline" href="#benefits">Дізнатися більше <Icon name="arrow" size={16} /></a>
           </div>
           <div className="about-photo-wrap">
-            <img src="/images/masterclass.jpg" alt="Бізнес-ментор проводить майстер-клас для студентів" loading="lazy" />
+            <img src={withBasePath("/images/masterclass.jpg")} alt="Бізнес-ментор проводить майстер-клас для студентів" loading="lazy" />
             <div className="about-photo-caption"><span className="caption-mark"><Icon name="landmark" size={22} /></span><span><strong>Практика в центрі.</strong><small>Люди, досвід, ваші наступні кроки.</small></span></div>
             <span className="about-photo-number">EBS / 2026</span>
           </div>
@@ -408,6 +442,16 @@ export default function AcademyLanding() {
             ))}
           </div>
           <div className="pricing-footnote"><Icon name="shield" size={17} /><span>Жодних списань: покупка демонстраційна, оплата на сайті не підключена.</span></div>
+          <div className="demo-cabinets">
+            <span className="demo-cabinets-label">Хочете одразу зазирнути всередину?</span>
+            <div className="demo-cabinets-links">
+              <a href={withBasePath("/cabinet/demo-start")}>Демо: Старт</a>
+              <span>·</span>
+              <a href={withBasePath("/cabinet/demo-mentorship")}>Демо: Менторство</a>
+              <span>·</span>
+              <a href={withBasePath("/cabinet/demo-vip")}>Демо: VIP</a>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -431,7 +475,7 @@ export default function AcademyLanding() {
       </section>
 
       <section className="final-cta" id="contacts">
-        <img src="/images/masterclass.jpg" alt="" loading="lazy" />
+        <img src={withBasePath("/images/masterclass.jpg")} alt="" loading="lazy" />
         <div className="final-cta-shade" />
         <div className="container final-cta-inner">
           <div><p className="eyebrow"><span className="eyebrow-line" /> Твій наступний крок</p><h2>ТВІЙ БІЗНЕС-ПОТЕНЦІАЛ<br />ПОЧИНАЄТЬСЯ ТУТ</h2></div>
