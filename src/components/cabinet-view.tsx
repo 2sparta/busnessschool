@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Icon } from "@/components/icon";
 import { LearningProgress } from "@/components/learning-progress";
 import { withBasePath } from "@/lib/base-path";
@@ -161,7 +162,12 @@ export function CabinetView({
               </article>
             ))}
             <article className="curator-placeholder-card">
-              <img src={withBasePath("/images/masterclass.jpg")} alt="Майстер-клас Empire Business School" loading="lazy" />
+              <Image
+                src="/images/masterclass.jpg"
+                alt="Майстер-клас Empire Business School"
+                fill
+                sizes="(max-width: 850px) 100vw, 33vw"
+              />
               <div className="curator-placeholder-shade" />
               <div className="curator-placeholder-content"><span className="video-card-number">03 <i /> ЗАПИС ЗУСТРІЧІ</span><span className="placeholder-play"><Icon name="play" size={22} /></span><h3>Наступна зустріч із куратором</h3><p>Запис з’явиться після завершення живого заняття.</p></div>
             </article>

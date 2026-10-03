@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
@@ -253,7 +254,14 @@ export default function AcademyLanding() {
       </header>
 
       <section className="hero-section" aria-labelledby="hero-title">
-        <img className="hero-photo" src={withBasePath("/images/hero-mentor.jpg")} alt="" fetchPriority="high" />
+        <Image
+          className="hero-photo"
+          src="/images/hero-mentor.jpg"
+          alt="Ментор Empire Business School у діловому костюмі"
+          fill
+          priority
+          sizes="100vw"
+        />
         <div className="hero-shade" />
         <div className="container hero-inner">
           <div className="hero-copy">
@@ -305,7 +313,12 @@ export default function AcademyLanding() {
             {courses.map((course, index) => (
               <article className="course-card" key={course.id}>
                 <div className="course-image-wrap">
-                  <img src={withBasePath(course.image)} alt="" loading="lazy" />
+                  <Image
+                    src={course.image}
+                    alt={course.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 850px) 50vw, 25vw"
+                  />
                   <span className="course-number">0{index + 1}</span>
                 </div>
                 <div className="course-card-content">
@@ -338,7 +351,13 @@ export default function AcademyLanding() {
             <a className="button button-outline" href="#benefits">Дізнатися більше <Icon name="arrow" size={16} /></a>
           </div>
           <div className="about-photo-wrap">
-            <img src={withBasePath("/images/masterclass.jpg")} alt="Бізнес-ментор проводить майстер-клас для студентів" loading="lazy" />
+            <Image
+              src="/images/masterclass.jpg"
+              alt="Бізнес-ментор проводить майстер-клас для студентів"
+              width={880}
+              height={640}
+              sizes="(max-width: 640px) 100vw, 50vw"
+            />
             <div className="about-photo-caption"><span className="caption-mark"><Icon name="landmark" size={22} /></span><span><strong>Практика в центрі.</strong><small>Люди, досвід, ваші наступні кроки.</small></span></div>
             <span className="about-photo-number">EBS / 2026</span>
           </div>
@@ -475,7 +494,13 @@ export default function AcademyLanding() {
       </section>
 
       <section className="final-cta" id="contacts">
-        <img src={withBasePath("/images/masterclass.jpg")} alt="" loading="lazy" />
+        <Image
+          src="/images/masterclass.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          aria-hidden="true"
+        />
         <div className="final-cta-shade" />
         <div className="container final-cta-inner">
           <div><p className="eyebrow"><span className="eyebrow-line" /> Твій наступний крок</p><h2>ТВІЙ БІЗНЕС-ПОТЕНЦІАЛ<br />ПОЧИНАЄТЬСЯ ТУТ</h2></div>
