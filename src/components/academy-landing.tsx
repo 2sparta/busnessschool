@@ -73,16 +73,16 @@ const questions = [
   },
 ] as const;
 
-function Brand({ onClick }: { onClick?: () => void }) {
+function Brand({ onClick, tone = "dark" }: { onClick?: () => void; tone?: "dark" | "light" }) {
   return (
-    <a className="brand" href="#home" onClick={onClick} aria-label="Empire Business School — на головну">
-      <span className="brand-mark">
-        <Icon name="landmark" size={27} />
-      </span>
-      <span className="brand-wordmark">
-        <strong>EMPIRE</strong>
-        <span>BUSINESS SCHOOL</span>
-      </span>
+    <a className="brand" href="#home" onClick={onClick} aria-label="FinEd — Фінансова освіта, на головну">
+      <img
+        className="brand-logo"
+        src={withBasePath(tone === "light" ? "/images/fined-logo-light.svg" : "/images/fined-logo.svg")}
+        alt="FinEd — Фінансова освіта"
+        width={200}
+        height={108}
+      />
     </a>
   );
 }
@@ -236,7 +236,7 @@ export default function AcademyLanding() {
         <Image
           className="hero-photo"
           src="/images/hero-mentor.jpg"
-          alt="Ведучий Empire Business School у діловому костюмі"
+          alt="Ведучий FinEd у діловому костюмі"
           fill
           priority
           sizes="100vw"
@@ -263,13 +263,13 @@ export default function AcademyLanding() {
             <Icon name="quote" size={26} />
             <p>Бізнес — це не про гроші. Це про свободу, можливості та вплив.</p>
             <span>Серафім Багратіонович</span>
-            <small>Засновник Empire Business School</small>
+            <small>Засновник FinEd</small>
           </aside>
           <div className="hero-index"><span>01</span><i /> 03 — РОЗУМІЙ ГРОШІ</div>
         </div>
       </section>
 
-      <section className="stats-band" aria-label="Програми Empire Business School">
+      <section className="stats-band" aria-label="Програми FinEd">
         <div className="container stats-grid">
           <div className="stat-item"><strong>3</strong><span>вікові програми</span></div>
           <div className="stat-item"><strong>1,5</strong><span>року курс для дітей до 16</span></div>
@@ -350,7 +350,7 @@ export default function AcademyLanding() {
               <p className="eyebrow"><span className="eyebrow-line" /> Переваги навчання</p>
               <h2 id="benefits-title">ЧОМУ ОБИРАЮТЬ НАС</h2>
             </div>
-            <span className="section-count">01 / EMPIRE APPROACH</span>
+            <span className="section-count">01 / FINED APPROACH</span>
           </div>
           <div className="benefits-grid">
             {benefits.map((benefit, index) => (
@@ -465,13 +465,13 @@ export default function AcademyLanding() {
 
       <footer className="site-footer">
         <div className="container footer-main">
-          <div className="footer-brand-wrap"><Brand /><p>Освіта. Люди. Можливості.</p></div>
+          <div className="footer-brand-wrap"><Brand tone="light" /><p>Освіта. Люди. Можливості.</p></div>
           <nav className="footer-nav" aria-label="Навігація внизу сторінки">
             <a href="#home">Головна</a><a href="#programs">Програми</a><a href="#about">Про нас</a><a href="#pricing">Тарифи</a><a href="#contacts">Контакти</a>
           </nav>
           <div className="footer-socials" aria-label="Соціальні мережі"><a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">ig</a><a href="https://t.me" target="_blank" rel="noreferrer" aria-label="Telegram">tg</a><a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube">▶</a></div>
         </div>
-        <div className="container footer-bottom"><span>© 2026 Empire Business School</span><span>Створено для тих, хто діє.</span><a href="#home">На початок ↑</a></div>
+        <div className="container footer-bottom"><span>© 2026 FinEd</span><span>Створено для тих, хто діє.</span><a href="#home">На початок ↑</a></div>
       </footer>
 
       {order && orderCourse && orderPlan && (

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="120 285 800 430" role="img" aria-label="FinEd — Фінансова освіта">
+  <g fill="#f3f0e8">
+    <polygon points="136,350 258,294 387,350 258,392"/>
+    <path d="M200,392 Q262,362 330,392 L330,402 Q262,378 200,404 Z"/>
+    <rect x="152" y="366" width="8" height="62"/>
+    <rect x="146" y="424" width="21" height="34" rx="4"/>
+    <path d="M200,385 H330 V440 H262 V478 H318 V520 H262 V610 H200 Z"/>
+    <circle cx="392" cy="412" r="25"/>
+    <rect x="372" y="455" width="42" height="155"/>
+    <path d="M452,455 H494 V490 Q515,455 545,455 Q583,455 583,500 V610 H541 V510 Q541,492 524,492 Q494,492 494,520 V610 H452 Z"/>
+  </g>
+  <g fill="#dec28f">
+    <path d="M200,610 V584 H234 V610 Z M252,610 V568 H270 V610 Z M276,610 V552 H294 V610 Z M300,610 V532 H318 V610 Z"/>
+    <polyline points="200,598 280,540 318,508" fill="none" stroke="#dec28f" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="334,496 306,500 330,524"/>
+    <path d="M618,398 H745 V438 H660 V498 H730 V538 H660 V570 H745 V610 H618 Z"/>
+    <rect x="848" y="398" width="42" height="212"/>
+    <path fill-rule="evenodd" d="M762,507 a56,58 0 1,0 112,0 a56,58 0 1,0 -112,0 Z M790,507 a28,30 0 1,0 56,0 a28,30 0 1,0 -56,0 Z"/>
+  </g>
+  <text x="550" y="692" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="40" letter-spacing="12" fill="#f3f0e8">ФІНАНСОВА ОСВІТА</text>
+</svg>

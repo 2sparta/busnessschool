@@ -51,10 +51,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 .header-inner { min-height: 82px; display: flex; align-items: center; justify-content: space-between; gap: 34px; }
 .brand { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 10px; color: #171816; }
-.brand-mark { width: 36px; height: 40px; display: grid; place-items: center; color: currentColor; }
-.brand-wordmark { display: flex; flex-direction: column; line-height: 1; }
-.brand-wordmark strong { font-family: Georgia, 'Times New Roman', serif; font-size: 19px; font-weight: 500; letter-spacing: -.35px; }
-.brand-wordmark span { margin-top: 5px; font-family: Georgia, 'Times New Roman', serif; font-size: 8.5px; letter-spacing: 1.4px; }
+.brand-logo { display: block; width: auto; height: 52px; }
 .main-nav { display: flex; align-items: center; gap: clamp(20px, 3vw, 40px); }
 .main-nav > a, .footer-nav a, .cabinet-nav a { position: relative; color: #3e403b; font-size: 12px; transition: color .2s ease; }
 .main-nav > a::after { position: absolute; right: 0; bottom: -9px; left: 0; height: 1px; background: var(--gold); content: ''; transform: scaleX(0); transform-origin: left; transition: transform .2s ease; }
@@ -267,8 +264,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .site-footer { color: #efeee8; background: #111311; }
 .footer-main { min-height: 105px; display: flex; align-items: center; justify-content: space-between; gap: 28px; padding-block: 24px; }
 .site-footer .brand { color: #f0eee8; }
-.site-footer .brand-mark { color: var(--gold-bright); }
-.footer-brand-wrap > p { margin: 7px 0 0 46px; color: rgba(239,237,228,.49); font-size: 8px; }
+.footer-brand-wrap > p { margin: 7px 0 0 0; color: rgba(239,237,228,.49); font-size: 8px; }
 .footer-nav { display: flex; align-items: center; gap: clamp(14px, 2vw, 27px); }
 .footer-nav a { color: rgba(239,237,228,.67); font-size: 9px; }
 .footer-nav a:hover, .cabinet-nav a:hover { color: var(--gold-bright); }
@@ -308,7 +304,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .cabinet-header { position: relative; z-index: 5; color: #f2efe7; background: #111311; border-bottom: 1px solid rgba(233,227,214,.1); }
 .cabinet-header-inner { min-height: 75px; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
 .cabinet-header .brand { color: #f3f0e8; }
-.cabinet-header .brand-mark { color: var(--gold-bright); }
 .cabinet-nav { display: flex; align-items: center; gap: 29px; }
 .cabinet-nav a { color: rgba(241,239,230,.69); font-size: 10px; }
 .cabinet-home-link { display: inline-flex; align-items: center; gap: 8px; color: #d8bf91; font-size: 9px; font-weight: 700; letter-spacing: .45px; }
@@ -499,9 +494,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .container { width: calc(100% - 38px); }
   html { scroll-padding-top: 70px; }
   .header-inner { min-height: 67px; }
-  .brand-mark { width: 32px; height: 35px; }
-  .brand-wordmark strong { font-size: 17px; }
-  .brand-wordmark span { font-size: 7.5px; }
+  .brand-logo { height: 42px; }
   .main-nav { right: -19px; left: -19px; padding-inline: 19px; }
   .hero-section, .hero-inner { min-height: 675px; }
   .hero-photo { object-position: 62% center; opacity: .72; }

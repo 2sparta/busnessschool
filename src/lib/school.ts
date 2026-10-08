@@ -9,7 +9,7 @@ export const courses = [
     duration: "1,5 року",
     image: "/images/course-finance.jpg",
     lessons: 7,
-    mentor: "Команда Empire",
+    mentor: "Команда FinEd",
   },
   {
     id: "age-16-30",
@@ -21,7 +21,7 @@ export const courses = [
     duration: "2 роки",
     image: "/images/course-founder.jpg",
     lessons: 9,
-    mentor: "Команда Empire",
+    mentor: "Команда FinEd",
   },
   {
     id: "age-30-60",
@@ -33,7 +33,7 @@ export const courses = [
     duration: "2 роки",
     image: "/images/course-leadership.jpg",
     lessons: 8,
-    mentor: "Команда Empire",
+    mentor: "Команда FinEd",
   },
 ] as const;
 

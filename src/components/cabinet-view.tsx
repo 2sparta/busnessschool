@@ -42,15 +42,14 @@ export function CabinetView({
   const home = homeHref ?? withBasePath("/");
   const pricingHref = `${home}#pricing`;
   const firstName = buyerName.trim().split(/\s+/)[0] || "студенте";
-  const contactLink = `mailto:hello@empire.school?subject=${encodeURIComponent(`Питання щодо програми ${course.title}`)}`;
+  const contactLink = `mailto:hello@fined.school?subject=${encodeURIComponent(`Питання щодо програми ${course.title}`)}`;
 
   return (
     <main className="page-frame cabinet-page">
       <header className="cabinet-header">
         <div className="container cabinet-header-inner">
-          <a className="brand" href={home} aria-label="Empire Business School — на головну">
-            <span className="brand-mark"><Icon name="landmark" size={27} /></span>
-            <span className="brand-wordmark"><strong>EMPIRE</strong><span>BUSINESS SCHOOL</span></span>
+          <a className="brand" href={home} aria-label="FinEd — Фінансова освіта, на головну">
+            <img className="brand-logo" src={withBasePath("/images/fined-logo-light.svg")} alt="FinEd — Фінансова освіта" width={200} height={108} />
           </a>
           <nav className="cabinet-nav" aria-label="Навігація кабінету">
             <a href="#learning">Навчання</a>
@@ -152,7 +151,7 @@ export function CabinetView({
             <article className="curator-placeholder-card">
               <Image
                 src="/images/masterclass.jpg"
-                alt="Онлайн-школа фінансової грамотності Empire Business School"
+                alt="Онлайн-школа фінансової грамотності FinEd"
                 fill
                 sizes="(max-width: 850px) 100vw, 33vw"
               />
@@ -174,11 +173,11 @@ export function CabinetView({
 
       <footer className="site-footer cabinet-footer">
         <div className="container footer-main">
-          <div className="footer-brand-wrap"><a className="brand" href={home}><span className="brand-mark"><Icon name="landmark" size={27} /></span><span className="brand-wordmark"><strong>EMPIRE</strong><span>BUSINESS SCHOOL</span></span></a><p>Освіта. Люди. Можливості.</p></div>
+          <div className="footer-brand-wrap"><a className="brand" href={home}><img className="brand-logo" src={withBasePath("/images/fined-logo-light.svg")} alt="FinEd — Фінансова освіта" width={200} height={108} /></a><p>Освіта. Люди. Можливості.</p></div>
           <div className="cabinet-footer-caption">Твій наступний рівень<br /><span>починається з дії.</span></div>
           <a className="cabinet-home-link" href={home}>Повернутися на сайт <Icon name="arrow" size={15} /></a>
         </div>
-        <div className="container footer-bottom"><span>© 2026 Empire Business School</span><span>Твій навчальний простір</span><a href="#learning">До навчання ↑</a></div>
+        <div className="container footer-bottom"><span>© 2026 FinEd</span><span>Твій навчальний простір</span><a href="#learning">До навчання ↑</a></div>
       </footer>
     </main>
   );
