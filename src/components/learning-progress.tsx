@@ -1,41 +1,6 @@
-"use client";
-
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/icon";
-import type { CourseId } from "@/lib/school";
-
-const lessonTitles: Record<CourseId, readonly string[]> = {
-  "under-16": [
-    "Що таке гроші і як вони працюють",
-    "Гривня: чому вона важлива для тебе",
-    "Інші валюти світу та найстабільніші з них",
-    "Куди можна вкладатися: базові варіанти",
-    "Можливості інвестування у 14–16 років",
-    "Що робити з грошима",
-    "Картки і рахунки: як вони працюють",
-  ],
-  "age-16-30": [
-    "База: основи фінансової грамотності",
-    "Кредити: як використовувати їх на свою користь",
-    "Іпотека: як вона працює",
-    "Перші гроші: найпопулярніші способи заробітку",
-    "Що робити з грошима: версія Pro",
-    "Бізнес: ФОП, податки та військові збори",
-    "Інвестиції: з чого почати",
-    "Крипта: як на ній заробляти, блокчейн і фармінг",
-    "Блог: як заробляти, реклама й розвиток бренду",
-  ],
-  "age-30-60": [
-    "База: мінімальні основи фінансів",
-    "Інвестиції: як вони працюють",
-    "Крипта і інвестиції: порівняння",
-    "Пенсійні фонди: що таке пенсія",
-    "Державна пенсія і як забезпечити собі пенсію",
-    "Блог: як на ньому заробляти",
-    "Фінансова незалежність: ознаки",
-    "Фінансова незалежність: як її досягти",
-  ],
-};
+import { lessonsFor, type CourseId } from "@/lib/school";
 
 type LearningProgressProps = {
   purchaseId: string;
@@ -43,8 +8,8 @@ type LearningProgressProps = {
 };
 
 export function LearningProgress({ purchaseId, courseId }: LearningProgressProps) {
-  const titles = lessonTitles[courseId];
-  const storageKey = `empire-progress-${purchaseId}`;
+  const titles = useMemo(() => lessonsFor(courseId), [courseId]);
+  const storageKey = `fined-progress-${purchaseId}`;
   const lessonIds = useMemo(() => titles.map((_, index) => `lesson-${index + 1}`), [titles]);
   const [completed, setCompleted] = useState<string[]>([]);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -73,7 +38,7 @@ export function LearningProgress({ purchaseId, courseId }: LearningProgressProps
     }
   }, [completed, hasLoaded, storageKey]);
 
-  const percentage = Math.round((completed.length / titles.length) * 100);
+  const percentage = titles.length === 0 ? 0 : Math.round((completed.length / titles.length) * 100);
 
   const toggleLesson = (lessonId: string) => {
     setCompleted((current) =>
@@ -85,16 +50,20 @@ export function LearningProgress({ purchaseId, courseId }: LearningProgressProps
     <section className="progress-card" aria-labelledby="progress-title">
       <div className="progress-card-heading">
         <div>
-          <p className="eyebrow eyebrow-dark"><span className="eyebrow-line" /> Твій навчальний маршрут</p>
+          <p className="eyebrow eyebrow-dark">
+            <span className="eyebrow-line" /> Твій навчальний маршрут
+          </p>
           <h2 id="progress-title">Почни з першого кроку</h2>
         </div>
-        <span className="progress-count">{completed.length} / {titles.length} <small>завершено</small></span>
+        <span className="progress-count">
+          {completed.length} / {titles.length} <small>завершено</small>
+        </span>
       </div>
       <div className="progress-track" aria-label={`Прогрес ${percentage}%`}>
         <span style={{ width: `${percentage}%` }} />
       </div>
       <div className="lesson-list">
-        {titles.map((title, index) => {
+        {titles.map((lesson, index) => {
           const lessonId = lessonIds[index];
           const isComplete = completed.includes(lessonId);
           return (
@@ -105,15 +74,20 @@ export function LearningProgress({ purchaseId, courseId }: LearningProgressProps
               aria-pressed={isComplete}
               onClick={() => toggleLesson(lessonId)}
             >
-              <span className="lesson-step">{isComplete ? <Icon name="check" size={16} /> : `0${index + 1}`}</span>
-              <span className="lesson-title">{title}<small>Практичний модуль · {18 + index * 3} хв</small></span>
+              <span className="lesson-step">{isComplete ? <Icon name="check" size={16} /> : String(index + 1).padStart(2, "0")}</span>
+              <span className="lesson-title">
+                {lesson.title}
+                <small>{lesson.detail}</small>
+              </span>
               <span className="lesson-status">{isComplete ? "Пройдено" : "Позначити"}</span>
             </button>
           );
         })}
       </div>
       <p className="progress-caption" aria-live="polite">
-        {percentage === 100 ? "Чудова робота — маршрут завершено. Обери наступну ціль!" : "Натискай на модуль після перегляду, щоб зберегти свій прогрес."}
+        {percentage === 100
+          ? "Маршрут пройдено. Можна повернутися до будь-якої теми."
+          : "Натискай на тему після перегляду, щоб зберегти прогрес у цьому браузері."}
       </p>
     </section>
   );

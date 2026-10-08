@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="FinEd">
+  <rect width="32" height="32" rx="7" fill="#111311"/>
+  <path fill="#C9A96F" d="M3.5 8.2 13.5 4.4 23.5 8.2 13.5 12 3.5 8.2z"/>
+  <rect x="12.6" y="8" width="1.8" height="3.4" fill="#C9A96F"/>
+  <path fill="#FBFAF7" d="M4.6 13.2h12.2v4H8.8v2.6h6.4v3.6H8.8V28H4.6V13.2z"/>
+  <path fill="#C9A96F" d="M18.6 21.4h3.5V28h-3.5zm4.4-4.2h3.5V28h-3.5zM27.4 13.2h3.5V28h-3.5z"/>
+</svg>
