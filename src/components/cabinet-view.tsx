@@ -27,20 +27,8 @@ type CabinetViewProps = {
   homeHref?: string;
 };
 
-const curatorVideos = [
-  {
-    title: "Почни з головного: надихай людей діяти",
-    speaker: "Simon Sinek · відкрита лекція",
-    length: "18 хв",
-    videoId: "iCvmsMzlF7o",
-  },
-  {
-    title: "Що насправді мотивує команду",
-    speaker: "Dan Pink · відкрита лекція",
-    length: "19 хв",
-    videoId: "u6XAPnuFjJc",
-  },
-] as const;
+// Записи уроків і зустрічей додає координатор після занять.
+const curatorVideos: readonly { title: string; speaker: string; length: string; videoId: string }[] = [];
 
 export function CabinetView({
   purchaseId,
@@ -108,13 +96,13 @@ export function CabinetView({
             <div className="live-meeting-card">
               <div className="meeting-icon"><Icon name="video" size={27} /></div>
               <div className="meeting-main">
-                <div className="meeting-kicker"><span className="status-dot" /> Живі зустрічі з ментором <span className="meeting-divider">/</span> ТАРИФ «{plan.name.toUpperCase()}»</div>
+                <div className="meeting-kicker"><span className="status-dot" /> Живі зустрічі з куратором <span className="meeting-divider">/</span> ТАРИФ «{plan.name.toUpperCase()}»</div>
                 <h2 id="schedule-title">Твоє місце за спільним столом.</h2>
-                <p>Практична групова зустріч щосереди. Готуй свої запитання та кейси — розберемо їх разом.</p>
+                <p>Практична групова зустріч щосереди. Готуй свої запитання — розберемо їх разом.</p>
                 <div className="meeting-meta">
                   <span><Icon name="calendar" size={17} /> Щосереди</span>
                   <span><Icon name="clock" size={17} /> 18:30 за Києвом</span>
-                  <span><Icon name="users" size={17} /> Група з ментором</span>
+                  <span><Icon name="users" size={17} /> Група з куратором</span>
                 </div>
                 {plan.id === "vip" && <div className="vip-session-note"><Icon name="spark" size={16} /> VIP: чотири індивідуальні консультації узгоджуються окремо з куратором.</div>}
                 <p className="meeting-demo-note">Це демонстраційний кабінет: координатор надішле актуальне посилання на зустріч перед заняттям.</p>
@@ -128,7 +116,7 @@ export function CabinetView({
           ) : (
             <div className="no-meeting-card">
               <span className="no-meeting-icon"><Icon name="book" size={25} /></span>
-              <div><span className="no-meeting-label">ТАРИФ «СТАРТ»</span><h2 id="schedule-title">Навчайся у власному темпі.</h2><p>Живі зустрічі з ментором не входять до цього тарифу. Тобі доступні відеоуроки, робочі матеріали та спільнота студентів.</p></div>
+              <div><span className="no-meeting-label">ТАРИФ «СТАРТ»</span><h2 id="schedule-title">Навчайся у власному темпі.</h2><p>Живі зустрічі з куратором не входять до цього тарифу. Тобі доступні відеоуроки, робочі матеріали та спільнота студентів.</p></div>
               <a className="button button-outline" href={pricingHref}>Переглянути формати <Icon name="arrow" size={16} /></a>
             </div>
           )}
@@ -143,7 +131,7 @@ export function CabinetView({
             <Icon name="quote" size={25} />
             <h2>Починай з дії — ясність приходить у процесі.</h2>
             <p>Не чекай ідеального моменту. Обери один маленький крок і зроби його сьогодні. Я поруч, якщо потрібна підтримка.</p>
-            <span className="mentor-signature">{course.mentor}<small>ментор програми</small></span>
+            <span className="mentor-signature">{course.mentor}<small>куратор програми</small></span>
           </aside>
         </div>
       </section>
@@ -151,8 +139,8 @@ export function CabinetView({
       <section className="video-library-section" id="videos" aria-labelledby="videos-title">
         <div className="container">
           <div className="section-heading section-heading-light video-library-heading">
-            <div><p className="eyebrow eyebrow-dark"><span className="eyebrow-line" /> Відеобібліотека</p><h2 id="videos-title">ВІДКРИТІ ЛЕКЦІЇ ТА РЕКОМЕНДАЦІЇ</h2></div>
-            <p className="video-library-intro">Кураторська добірка для натхнення й нових ідей. Записи живих зустрічей додаватимуться сюди після занять.</p>
+            <div><p className="eyebrow eyebrow-dark"><span className="eyebrow-line" /> Відеобібліотека</p><h2 id="videos-title">ЗАПИСИ УРОКІВ І ЗУСТРІЧЕЙ</h2></div>
+            <p className="video-library-intro">Тут з’являтимуться записи відеоуроків і живих зустрічей з куратором після занять.</p>
           </div>
           <div className="video-grid">
             {curatorVideos.map((video, index) => (
@@ -164,7 +152,7 @@ export function CabinetView({
             <article className="curator-placeholder-card">
               <Image
                 src="/images/masterclass.jpg"
-                alt="Майстер-клас Empire Business School"
+                alt="Онлайн-школа фінансової грамотності Empire Business School"
                 fill
                 sizes="(max-width: 850px) 100vw, 33vw"
               />

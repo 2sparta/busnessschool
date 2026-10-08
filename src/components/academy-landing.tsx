@@ -25,23 +25,23 @@ type OrderDetails = {
 const benefits = [
   {
     icon: "school",
-    title: "Актуальні програми",
-    text: "Навчання, створене на реальних завданнях і потребах українського бізнесу.",
+    title: "Програми за віком",
+    text: "Окремий маршрут для дітей до 16 років, молоді 16–30 і дорослих 30–60+.",
   },
   {
     icon: "users",
-    title: "Експертні ментори",
-    text: "Поруч практики, які щодня приймають рішення й розвивають власні команди.",
+    title: "Куратори",
+    text: "У тарифах «Менторство» і «VIP» — живі зустрічі з кураторами та розбір запитань.",
   },
   {
     icon: "briefcase",
-    title: "Практика та кейси",
-    text: "Відпрацьовуйте нові навички на своєму проєкті, а не на абстрактних прикладах.",
+    title: "Практика",
+    text: "Картки, рахунки, бюджет і кредити — відпрацьовуйте на реальних прикладах.",
   },
   {
     icon: "network",
     title: "Спільнота однодумців",
-    text: "Знайомтеся, діліться досвідом і зростайте разом із підприємцями.",
+    text: "Закрита спільнота студентів, де можна ставити запитання й ділитися досвідом.",
   },
   {
     icon: "rocket",
@@ -50,42 +50,21 @@ const benefits = [
   },
 ] as const;
 
-const testimonials = [
-  {
-    initials: "ІП",
-    name: "Ігор Петренко",
-    role: "випускник програми «Підприємець з нуля»",
-    text: "За 12 тижнів я впорядкував бізнес-ідею, запустив перший продаж і нарешті зрозумів, що робити далі.",
-  },
-  {
-    initials: "АК",
-    name: "Анастасія Кравченко",
-    role: "випускниця програми «Маркетинг та продажі»",
-    text: "Найцінніше — практичні інструменти й підтримка ментора. Нову стратегію ми одразу тестували в роботі.",
-  },
-  {
-    initials: "МС",
-    name: "Максим Сидоренко",
-    role: "випускник програми «Управління та лідерство»",
-    text: "Команда стала самостійнішою, а в мене з’явився час на розвиток компанії. Результат відчув майже одразу.",
-  },
-] as const;
-
 const questions = [
   {
-    question: "Чи потрібен досвід, щоб почати навчання?",
+    question: "Чи потрібні знання, щоб почати навчання?",
     answer:
-      "Ні. Програми підійдуть як тим, хто тільки планує власну справу, так і підприємцям, які хочуть систематизувати вже діючий бізнес.",
+      "Ні. Кожна програма починається з бази, тож вона підійде тим, хто ще не має фінансового досвіду.",
   },
   {
     question: "Як проходить навчання?",
     answer:
-      "Усі основні уроки доступні онлайн у вашому кабінеті. Залежно від тарифу до навчання додаються живі зустрічі з ментором, розбір кейсів і персональний зворотний зв’язок.",
+      "Усі основні уроки доступні онлайн у вашому кабінеті. У тарифах «Менторство» і «VIP» додаються живі зустрічі з куратором, розбір запитань і персональний зворотний зв’язок.",
   },
   {
     question: "Чи можна обрати різні тарифи для різних програм?",
     answer:
-      "Так. Тариф обирається окремо для програми. У формі запису перед оформленням можна змінити курс або повернутися до переліку програм.",
+      "Так. Тариф обирається окремо для програми. У формі запису перед оформленням можна змінити програму або повернутися до переліку.",
   },
   {
     question: "Чи є оплата на сайті?",
@@ -240,7 +219,7 @@ export default function AcademyLanding() {
             <a href="#home" onClick={() => setMobileMenuOpen(false)}>Головна</a>
             <a href="#programs" onClick={() => setMobileMenuOpen(false)}>Програми</a>
             <a href="#about" onClick={() => setMobileMenuOpen(false)}>Про нас</a>
-            <a href="#reviews" onClick={() => setMobileMenuOpen(false)}>Відгуки</a>
+            <a href="#pricing" onClick={() => setMobileMenuOpen(false)}>Тарифи</a>
             <a href="#contacts" onClick={() => setMobileMenuOpen(false)}>Контакти</a>
             <button className="button button-gold nav-mobile-cta" type="button" onClick={() => { setMobileMenuOpen(false); openOrder("mentorship"); }}>
               Записатися <Icon name="arrow" size={16} />
@@ -257,7 +236,7 @@ export default function AcademyLanding() {
         <Image
           className="hero-photo"
           src="/images/hero-mentor.jpg"
-          alt="Ментор Empire Business School у діловому костюмі"
+          alt="Ведучий Empire Business School у діловому костюмі"
           fill
           priority
           sizes="100vw"
@@ -265,15 +244,15 @@ export default function AcademyLanding() {
         <div className="hero-shade" />
         <div className="container hero-inner">
           <div className="hero-copy">
-            <p className="eyebrow"><span className="eyebrow-line" /> Бізнес-школа нового покоління</p>
-            <h1 id="hero-title">СТВОРИ СВОЄ<br /><span>ДОСЯГНЕННЯ</span></h1>
+            <p className="eyebrow"><span className="eyebrow-line" /> Онлайн-школа фінансової грамотності</p>
+            <h1 id="hero-title">КЕРУЙ СВОЇМИ<br /><span>ГРОШИМА</span></h1>
             <p className="hero-description">
-              Практичне навчання, досвід менторів і середовище людей, які діють. Перетвори сміливу ідею на сильний бізнес.
+              Від першої гривні до фінансової незалежності. Три програми за віком, відеоуроки у власному темпі та живі зустрічі з кураторами.
             </p>
             <div className="hero-highlights">
-              <div><Icon name="trend" size={24} /><span>Практичні<br />кейси та проєкти</span></div>
-              <div><Icon name="users" size={24} /><span>Досвідчені<br />ментори</span></div>
-              <div><Icon name="shield" size={24} /><span>Сильна<br />спільнота</span></div>
+              <div><Icon name="trend" size={24} /><span>Практичні<br />завдання</span></div>
+              <div><Icon name="users" size={24} /><span>Живі зустрічі<br />з кураторами</span></div>
+              <div><Icon name="shield" size={24} /><span>Навчання<br />у власному темпі</span></div>
               <div><Icon name="school" size={24} /><span>Підтримка<br />після навчання</span></div>
             </div>
             <button className="button button-gold hero-cta" type="button" onClick={() => chooseCourse(selectedCourseId)}>
@@ -283,19 +262,19 @@ export default function AcademyLanding() {
           <aside className="hero-quote">
             <Icon name="quote" size={26} />
             <p>Бізнес — це не про гроші. Це про свободу, можливості та вплив.</p>
-            <span>Дмитро Коваленко</span>
+            <span>Серафім Багратіонович</span>
             <small>Засновник Empire Business School</small>
           </aside>
-          <div className="hero-index"><span>01</span><i /> 04 — РОЗВИВАЙ СВОЄ</div>
+          <div className="hero-index"><span>01</span><i /> 03 — РОЗУМІЙ ГРОШІ</div>
         </div>
       </section>
 
-      <section className="stats-band" aria-label="Empire Business School у цифрах">
+      <section className="stats-band" aria-label="Програми Empire Business School">
         <div className="container stats-grid">
-          <div className="stat-item"><strong>5<span>+</span></strong><span>років досвіду</span></div>
-          <div className="stat-item"><strong>1 200<span>+</span></strong><span>випускників</span></div>
-          <div className="stat-item"><strong>95<span>%</span></strong><span>задоволених студентів</span></div>
-          <div className="stat-item"><strong>20<span>+</span></strong><span>практичних програм</span></div>
+          <div className="stat-item"><strong>3</strong><span>вікові програми</span></div>
+          <div className="stat-item"><strong>1,5</strong><span>року курс для дітей до 16</span></div>
+          <div className="stat-item"><strong>2</strong><span>роки програм для 16+</span></div>
+          <div className="stat-item"><strong>2</strong><span>формати: відео або з куратором</span></div>
         </div>
       </section>
 
@@ -306,7 +285,7 @@ export default function AcademyLanding() {
               <p className="eyebrow"><span className="eyebrow-line" /> Наші програми</p>
               <h2 id="programs-title">ОБЕРИ СВІЙ ШЛЯХ</h2>
             </div>
-            <p className="section-heading-note">Знайди свою точку зростання —<br />ми допоможемо прокласти маршрут.</p>
+            <p className="section-heading-note">Обери свій вік —<br />ми підкажемо маршрут навчання.</p>
           </div>
 
           <div className="course-grid">
@@ -328,7 +307,7 @@ export default function AcademyLanding() {
                   <div className="course-meta">
                     <span><Icon name="clock" size={15} /> {course.duration}</span>
                     <i />
-                    <span>Онлайн / офлайн</span>
+                    <span>Онлайн</span>
                   </div>
                   <button className="round-arrow" type="button" aria-label={`Обрати програму «${course.title}»`} onClick={() => chooseCourse(course.id)}>
                     <Icon name="arrow" size={18} />
@@ -337,7 +316,7 @@ export default function AcademyLanding() {
               </article>
             ))}
           </div>
-          <div className="programs-footer"><span>01 — 04</span><span className="programs-footer-line" /><span>ЗНАЙДИ СВІЙ НАПРЯМ</span></div>
+          <div className="programs-footer"><span>01 — 03</span><span className="programs-footer-line" /><span>ЗНАЙДИ СВІЙ НАПРЯМ</span></div>
         </div>
       </section>
 
@@ -345,15 +324,15 @@ export default function AcademyLanding() {
         <div className="container about-grid">
           <div className="about-copy">
             <p className="eyebrow eyebrow-dark"><span className="eyebrow-line" /> Про нас</p>
-            <h2 id="about-title">EMPIRE BUSINESS SCHOOL —<br /><span>БІЛЬШЕ, НІЖ НАВЧАННЯ</span></h2>
-            <p>Ми — команда підприємців, менторів і викладачів, які щодня створюють бізнес. Тому навчаємо не теорії заради теорії, а рішенням, що працюють у реальному житті.</p>
+            <h2 id="about-title">ОНЛАЙН-ШКОЛА<br /><span>ФІНАНСОВОЇ ГРАМОТНОСТІ</span></h2>
+            <p>Ми — онлайн-платформа, яка вчить керувати грошима свідомо: від перших заощаджень і картки до інвестицій, кредитів, пенсії та фінансової незалежності. Програми поділені за віком, бо на кожному етапі життя свої завдання.</p>
             <p className="about-note"><Icon name="spark" size={18} /> Кожен модуль — маленький крок до великої мети.</p>
             <a className="button button-outline" href="#benefits">Дізнатися більше <Icon name="arrow" size={16} /></a>
           </div>
           <div className="about-photo-wrap">
             <Image
               src="/images/masterclass.jpg"
-              alt="Бізнес-ментор проводить майстер-клас для студентів"
+              alt="Заняття з фінансової грамотності"
               width={880}
               height={640}
               sizes="(max-width: 640px) 100vw, 50vw"
@@ -386,31 +365,6 @@ export default function AcademyLanding() {
         </div>
       </section>
 
-      <section className="reviews-section" id="reviews" aria-labelledby="reviews-title">
-        <div className="container">
-          <div className="section-heading section-heading-light">
-            <div>
-              <p className="eyebrow eyebrow-dark"><span className="eyebrow-line" /> Відгуки</p>
-              <h2 id="reviews-title">ЩО КАЖУТЬ НАШІ ВИПУСКНИКИ</h2>
-            </div>
-            <span className="reviews-rating"><strong>4.9</strong> / 5 <span>★★★★★</span></span>
-          </div>
-          <div className="testimonial-grid">
-            {testimonials.map((review) => (
-              <article className="testimonial-card" key={review.name}>
-                <div className="testimonial-top">
-                  <span className="avatar-initials">{review.initials}</span>
-                  <div><strong>{review.name}</strong><span>{review.role}</span></div>
-                </div>
-                <div className="testimonial-stars" aria-label="5 зірок">★★★★★</div>
-                <p>«{review.text}»</p>
-                <span className="testimonial-mark"><Icon name="quote" size={20} /></span>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="pricing-section section-dark" id="pricing" aria-labelledby="pricing-title">
         <div className="pricing-glow" />
         <div className="container pricing-inner">
@@ -418,7 +372,7 @@ export default function AcademyLanding() {
             <div>
               <p className="eyebrow"><span className="eyebrow-line" /> Інвестиція у себе</p>
               <h2 id="pricing-title">ОБЕРИ СВІЙ ФОРМАТ</h2>
-              <p className="pricing-lead">Твоя ціль визначає маршрут. Обери підтримку,<br className="desktop-break" /> яка потрібна саме тобі.</p>
+              <p className="pricing-lead">Обери формат навчання: самостійно з відеоуроками<br className="desktop-break" /> або з живими зустрічами з куратором.</p>
             </div>
             <div className="pricing-program-select">
               <label htmlFor="course-picker">Програма навчання</label>
@@ -503,8 +457,8 @@ export default function AcademyLanding() {
         />
         <div className="final-cta-shade" />
         <div className="container final-cta-inner">
-          <div><p className="eyebrow"><span className="eyebrow-line" /> Твій наступний крок</p><h2>ТВІЙ БІЗНЕС-ПОТЕНЦІАЛ<br />ПОЧИНАЄТЬСЯ ТУТ</h2></div>
-          <p>Залиш заявку — і обери програму,<br />що наблизить тебе до результату.</p>
+          <div><p className="eyebrow"><span className="eyebrow-line" /> Твій наступний крок</p><h2>ТВОЯ ФІНАНСОВА СВОБОДА<br />ПОЧИНАЄТЬСЯ ТУТ</h2></div>
+          <p>Залиш заявку — і обери програму,<br />що відповідає твоєму віку.</p>
           <button className="button button-gold" type="button" onClick={() => openOrder("mentorship")}>Записатися на програму <Icon name="arrow" size={16} /></button>
         </div>
       </section>
@@ -513,7 +467,7 @@ export default function AcademyLanding() {
         <div className="container footer-main">
           <div className="footer-brand-wrap"><Brand /><p>Освіта. Люди. Можливості.</p></div>
           <nav className="footer-nav" aria-label="Навігація внизу сторінки">
-            <a href="#home">Головна</a><a href="#programs">Програми</a><a href="#about">Про нас</a><a href="#reviews">Відгуки</a><a href="#contacts">Контакти</a>
+            <a href="#home">Головна</a><a href="#programs">Програми</a><a href="#about">Про нас</a><a href="#pricing">Тарифи</a><a href="#contacts">Контакти</a>
           </nav>
           <div className="footer-socials" aria-label="Соціальні мережі"><a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">ig</a><a href="https://t.me" target="_blank" rel="noreferrer" aria-label="Telegram">tg</a><a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube">▶</a></div>
         </div>
