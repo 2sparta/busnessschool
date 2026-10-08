@@ -20,7 +20,7 @@ export type DemoPurchaseId = (typeof DEMO_PURCHASE_IDS)[number];
 const DEMO_SEED: Record<DemoPurchaseId, StoredPurchase> = {
   "demo-start": {
     id: "demo-start",
-    courseId: "entrepreneurship",
+    courseId: "age-16-30",
     planId: "start",
     buyerName: "Олександр Демченко",
     buyerEmail: "demo@empire.school",
@@ -28,7 +28,7 @@ const DEMO_SEED: Record<DemoPurchaseId, StoredPurchase> = {
   },
   "demo-mentorship": {
     id: "demo-mentorship",
-    courseId: "marketing",
+    courseId: "under-16",
     planId: "mentorship",
     buyerName: "Ольга Демченко",
     buyerEmail: "demo@empire.school",
@@ -36,7 +36,7 @@ const DEMO_SEED: Record<DemoPurchaseId, StoredPurchase> = {
   },
   "demo-vip": {
     id: "demo-vip",
-    courseId: "leadership",
+    courseId: "age-30-60",
     planId: "vip",
     buyerName: "Богдан Демченко",
     buyerEmail: "demo@empire.school",

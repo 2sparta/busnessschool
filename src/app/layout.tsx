@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Empire Business School — практична освіта для бізнесу",
+  title: "Empire Business School — онлайн-школа фінансової грамотності",
   description:
-    "Практичні програми з підприємництва, лідерства, маркетингу та фінансів. Навчайся з менторами й розвивай бізнес у своєму темпі.",
+    "Онлайн-школа фінансової грамотності для дітей до 16 років, молоді 16–30 і дорослих 30–60+. Навчайся у власному темпі або з кураторами.",
   applicationName: "Empire Business School",
 };
 
