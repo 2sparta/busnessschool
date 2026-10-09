@@ -9,7 +9,10 @@ import {
   formatMoney,
   getCourse,
   getPlan,
-  isCourseId,
+  planPrice,
+  programFloor,
+  readings,
+  ANNUAL_COST_PER_STUDENT,
   plans,
   type CourseId,
   type PlanId,
@@ -164,6 +167,9 @@ export function AcademyLanding() {
             </a>
             <a href="#about" onClick={() => setMobileMenuOpen(false)}>
               Про нас
+            </a>
+            <a href="#library" onClick={() => setMobileMenuOpen(false)}>
+              Література
             </a>
             <a href="#pricing" onClick={() => setMobileMenuOpen(false)}>
               Тарифи
@@ -491,11 +497,14 @@ export function AcademyLanding() {
           </div>
 
           <p className="pricing-course-line">
-            Тарифи для програми <strong>{selectedCourse.ageLabel}</strong> · {selectedCourse.duration} · {selectedCourse.pace}
+            Тарифи для програми <strong>{selectedCourse.ageLabel}</strong> · {selectedCourse.duration} · підлога{" "}
+            {formatMoney(programFloor(selectedCourse.id))} ₴
           </p>
 
           <div className="pricing-grid">
-            {plans.map((plan) => (
+            {plans.map((plan) => {
+              const price = planPrice(plan.id, selectedCourse.id);
+              return (
               <article className={`price-card${plan.featured ? " price-card-featured" : ""}`} key={plan.id}>
                 {plan.featured && (
                   <div className="popular-ribbon">
@@ -520,11 +529,12 @@ export function AcademyLanding() {
                 <div className="price-card-bottom">
                   <div className="price-value">
                     <strong>
-                      {formatMoney(plan.amount)} <small>₴</small>
+                      {formatMoney(price)} <small>₴</small>
                     </strong>
-                    <del>{formatMoney(plan.compareAt)} ₴</del>
                   </div>
-                  <span className="price-caption">разова вартість · {selectedCourse.ageShort}</span>
+                  <span className="price-caption">
+                    за всю програму · {selectedCourse.duration} · +{Math.round(plan.markup * 100)}% до собівартості
+                  </span>
                   <button
                     className={`button ${plan.featured ? "button-gold" : "button-dark-outline"} price-button`}
                     type="button"
@@ -536,13 +546,15 @@ export function AcademyLanding() {
                     Демо-запис без оплати <span>·</span> кабінет одразу
                   </span>
                 </div>
-                {plan.featured && <span className="price-discount">−29%</span>}
               </article>
-            ))}
+              );
+            })}
           </div>
           <div className="pricing-footnote">
             <Icon name="shield" size={17} />
-            <span>Жодних списань: запис демонстраційний, оплата на сайті не підключена.</span>
+            <span>
+              Рік навчання при 150 учнях коштує {formatMoney(ANNUAL_COST_PER_STUDENT)} ₴. До 16 множимо на 1,5 року, програми 16+ — на 2. Старт +20%, Менторство +55%, VIP +110%. Оплата на сайті ще не списується.
+            </span>
           </div>
           <div className="demo-cabinets">
             <span className="demo-cabinets-label">Хочете одразу зазирнути всередину?</span>
@@ -559,6 +571,34 @@ export function AcademyLanding() {
                 Демо: VIP
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="reading-section" id="library" aria-labelledby="library-title">
+        <div className="container">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow eyebrow-dark">
+                <span className="eyebrow-line" /> Що читати поруч із курсом
+              </p>
+              <h2 id="library-title">ЛІТЕРАТУРА І ДЖЕРЕЛА</h2>
+            </div>
+            <p className="section-heading-note reading-note">
+              Офіційні матеріали й дві книжки, на які спираємося в програмах. Посилання відкриваються в новій вкладці.
+            </p>
+          </div>
+          <div className="reading-grid">
+            {readings.map((item) => (
+              <a className="reading-card" key={item.href} href={item.href} target="_blank" rel="noreferrer">
+                <span>{item.source}</span>
+                <h3>{item.title}</h3>
+                <p>{item.detail}</p>
+                <em>
+                  Відкрити <Icon name="external" size={14} />
+                </em>
+              </a>
+            ))}
           </div>
         </div>
       </section>
@@ -631,6 +671,7 @@ export function AcademyLanding() {
             <a href="#home">Головна</a>
             <a href="#programs">Програми</a>
             <a href="#syllabus">Маршрут</a>
+            <a href="#library">Література</a>
             <a href="#pricing">Тарифи</a>
             <a href="#contacts">Контакти</a>
           </nav>
@@ -638,7 +679,7 @@ export function AcademyLanding() {
             <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">
               ig
             </a>
-            <a href="https://t.me" target="_blank" rel="noreferrer" aria-label="Telegram">
+            <a href="https://t.me/SERSTRU" target="_blank" rel="noreferrer" aria-label="Telegram">
               tg
             </a>
             <a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube">
@@ -685,9 +726,7 @@ export function AcademyLanding() {
                     key={course.id}
                     type="button"
                     className={`age-pill${order.courseId === course.id ? " is-active" : ""}`}
-                    onClick={() => {
-                      if (isCourseId(course.id)) setOrder({ ...order, courseId: course.id });
-                    }}
+                    onClick={() => setOrder({ ...order, courseId: course.id })}
                   >
                     <strong>{course.ageLabel}</strong>
                     <span>{course.duration}</span>
@@ -699,7 +738,7 @@ export function AcademyLanding() {
               <span>
                 {orderCourse.ageLabel}
                 <small>
-                  Тариф «{orderPlan.name}» · {formatMoney(orderPlan.amount)} ₴ · {orderCourse.duration}
+                  Тариф «{orderPlan.name}» · {formatMoney(planPrice(order.planId, order.courseId))} ₴ · {orderCourse.duration}
                 </small>
               </span>
               <span>

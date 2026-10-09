@@ -224,7 +224,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .price-card h3 { margin: 7px 0 8px; font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif; font-size: 28px; font-weight: 400; }
 .price-card-top > p { min-height: 35px; margin: 0; color: #6e6e67; font-size: 10px; line-height: 1.55; }
 .plan-benefits { display: grid; gap: 12px; margin: 19px 0 22px; padding: 0; list-style: none; }
-.plan-benefits li { display: flex; align-items: flex-start; gap: 9px; color: #4f504a; font-size: 9px; line-height: 1.55; }
+.plan-benefits li { display: flex; align-items: flex-start; gap: 9px; color: #4f504a; font-size: 13px; line-height: 1.45; }
 .check-mark { width: 16px; height: 16px; display: grid; flex: 0 0 16px; place-items: center; margin-top: -1px; border-radius: 50%; color: #816a40; background: rgba(199,169,111,.2); }
 .price-card-bottom { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(36,36,30,.11); }
 .price-value { display: flex; align-items: baseline; gap: 10px; }
@@ -571,7 +571,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .price-card h3 { font-size: 29px; }
   .price-card-top > p { min-height: 0; }
   .plan-benefits { gap: 11px; }
-  .plan-benefits li { font-size: 10px; }
+  .plan-benefits li { font-size: 13px; }
   .price-value strong { font-size: 29px; }
   .price-button { min-height: 46px; }
   .price-discount { right: 13px; bottom: 86px; }
@@ -788,6 +788,32 @@ button.course-card {
 .modal-emblem { width: auto; height: auto; margin-bottom: 16px; padding: 0; border: 0; }
 .order-modal { width: min(100%, 560px); }
 
+.reading-section { padding: 84px 0; background: #f8f6f1; }
+.reading-note { color: #72736d; }
+.reading-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.reading-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 180px;
+  padding: 20px 18px 16px;
+  border: 1px solid rgba(30, 31, 28, .13);
+  border-radius: 8px;
+  background: #fbfaf7;
+  transition: transform .2s ease, border-color .2s ease;
+}
+.reading-card:hover { transform: translateY(-3px); border-color: rgba(176, 137, 76, .7); }
+.reading-card > span { color: #9a7c48; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.reading-card h3 { margin: 0; color: #1c201c; font-family: "Cormorant Garamond", Georgia, serif; font-size: 28px; font-weight: 500; line-height: 1.05; }
+.reading-card p { margin: 0; color: #666761; font-size: 14px; line-height: 1.5; }
+.reading-card em { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; color: #8b7043; font-size: 12px; font-style: normal; font-weight: 700; }
+@media (max-width: 850px) {
+  .reading-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .reading-grid { grid-template-columns: 1fr; }
+  .reading-section { padding-block: 56px; }
+}
 .cabinet-loading, .cabinet-missing {
   min-height: 70vh;
   display: flex;
@@ -799,7 +825,8 @@ button.course-card {
   margin: 0 auto;
   padding: 48px 24px;
 }
-.cabinet-missing h1 { margin: 8px 0 0; font-family: "Cormorant Garamond", Georgia, serif; font-size: 42px; font-weight: 500; }
+.cabinet-library-title { margin: 0 0 18px; color: #1c201c; font-family: "Cormorant Garamond", Georgia, serif; font-size: 36px; font-weight: 500; }
+.cabinet-reading-grid { margin-top: 8px; }
 .cabinet-missing p { margin: 0 0 8px; color: #666761; font-size: 15px; line-height: 1.55; }
 
 @media (max-width: 850px) {

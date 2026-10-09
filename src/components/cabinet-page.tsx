@@ -4,7 +4,7 @@ import { Icon } from "@/components/icon";
 import { LearningProgress } from "@/components/learning-progress";
 import { Logo } from "@/components/logo";
 import { getAnyOfflinePurchase, type StoredPurchase } from "@/lib/demo-store";
-import { getCourse, getPlan } from "@/lib/school";
+import { getCourse, getPlan, curatorFor, readings } from "@/lib/school";
 
 function formatEnrolledOn(isoDate: string): string {
   try {
@@ -53,8 +53,15 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
   const plan = getPlan(purchase.planId);
   if (!course || !plan) return null;
 
+  const curator = curatorFor(purchase.id);
+  const curatorInitials = curator
+    .split(" ")
+    .slice(0, 2)
+    .map((part) => part[0] ?? "")
+    .join("");
   const firstName = purchase.buyerName.trim().split(/\s+/)[0] || "студенте";
-  const contactLink = `mailto:hello@fined.school?subject=${encodeURIComponent(`Питання щодо програми ${course.title}`)}`;
+  const contactLink = "https://t.me/SERSTRU";
+  const meetingLink = "https://meet.google.com/abi-iktq-oam";
 
   return (
     <main className="page-frame cabinet-page">
@@ -123,7 +130,7 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
               </div>
               <div className="account-detail">
                 <span>Куратор</span>
-                <strong>{course.mentor}</strong>
+                <strong>{curator}</strong>
               </div>
               <a href="#learning" className="account-card-link">
                 Перейти до навчання <Icon name="arrow" size={15} />
@@ -162,14 +169,14 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
                     <Icon name="spark" size={16} /> VIP: чотири індивідуальні консультації узгоджуються окремо з куратором.
                   </div>
                 )}
-                <p className="meeting-demo-note">Демонстраційний кабінет: координатор надішле актуальне посилання перед заняттям.</p>
+                <p className="meeting-demo-note">Зустріч щосереди о 18:30 за Києвом. Посилання одне для групи.</p>
               </div>
               <div className="meeting-action">
-                <span className="meeting-next-label">ОНЛАЙН-КІМНАТА</span>
-                <a className="button button-gold" href="https://meet.google.com/abc-defg-hij" target="_blank" rel="noreferrer">
-                  Відкрити демо-кімнату <Icon name="external" size={16} />
+                <span className="meeting-next-label">GOOGLE MEET</span>
+                <a className="button button-gold" href={meetingLink} target="_blank" rel="noreferrer">
+                  Приєднатися до зустрічі <Icon name="external" size={16} />
                 </a>
-                <span>Google Meet · демонстраційне посилання</span>
+                <span>meet.google.com/abi-iktq-oam</span>
               </div>
             </div>
           ) : (
@@ -195,7 +202,7 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
           <LearningProgress purchaseId={purchase.id} courseId={course.id} />
           <aside className="mentor-note-card">
             <div className="mentor-note-top">
-              <span className="mentor-avatar">К</span>
+              <span className="mentor-avatar">{curatorInitials}</span>
               <span className="mentor-message-label">ВІД КУРАТОРА</span>
             </div>
             <Icon name="quote" size={25} />
@@ -204,8 +211,8 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
               Програма «{course.ageLabel}» зібрана під твій етап життя. Не перестрибуй усе одразу — закрий першу тему і рухайся далі.
             </p>
             <span className="mentor-signature">
-              {course.mentor}
-              <small>програма {course.ageLabel}</small>
+              {curator}
+              <small>куратор програми {course.ageLabel}</small>
             </span>
           </aside>
         </div>
@@ -256,9 +263,27 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
             <h2>Потрібна допомога?</h2>
             <p>Куратор підкаже, з якої теми програми «{course.ageLabel}» почати і як підготуватися до зустрічі.</p>
           </div>
-          <a className="button button-outline" href={contactLink}>
+          <a className="button button-outline" href={contactLink} target="_blank" rel="noreferrer">
             Написати куратору <Icon name="arrow" size={16} />
           </a>
+        </div>
+      </section>
+
+      <section className="cabinet-support-section" aria-labelledby="cabinet-library-title">
+        <div className="container">
+          <p className="eyebrow eyebrow-dark">
+            <span className="eyebrow-line" /> До курсу
+          </p>
+          <h2 id="cabinet-library-title" className="cabinet-library-title">Література і джерела</h2>
+          <div className="reading-grid cabinet-reading-grid">
+            {readings.map((item) => (
+              <a className="reading-card" key={item.href} href={item.href} target="_blank" rel="noreferrer">
+                <span>{item.source}</span>
+                <h3>{item.title}</h3>
+                <p>{item.detail}</p>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
