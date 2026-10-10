@@ -28,7 +28,7 @@ const DEMO_SEED: Record<DemoPurchaseId, StoredPurchase> = {
   "demo-mentorship": {
     id: "demo-mentorship",
     courseId: "under-16",
-    planId: "mentorship",
+    planId: "start",
     buyerName: "Ольга Демченко",
     buyerEmail: "demo@fined.school",
     createdAt: new Date("2026-09-05T09:00:00+03:00").toISOString(),
@@ -36,7 +36,7 @@ const DEMO_SEED: Record<DemoPurchaseId, StoredPurchase> = {
   "demo-vip": {
     id: "demo-vip",
     courseId: "age-30-60",
-    planId: "vip",
+    planId: "start",
     buyerName: "Богдан Демченко",
     buyerEmail: "demo@fined.school",
     createdAt: new Date("2026-09-10T09:00:00+03:00").toISOString(),

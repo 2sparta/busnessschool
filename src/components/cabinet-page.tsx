@@ -50,8 +50,7 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
   }
 
   const course = getCourse(purchase.courseId);
-  const plan = getPlan(purchase.planId);
-  if (!course || !plan) return null;
+  if (!course || !getPlan(purchase.planId)) return null;
 
   const curator = curatorFor(purchase.id);
   const curatorInitials = curator
@@ -61,7 +60,6 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
     .join("");
   const firstName = purchase.buyerName.trim().split(/\s+/)[0] || "студенте";
   const contactLink = "https://t.me/SERSTRU";
-  const meetingLink = "https://meet.google.com/abi-iktq-oam";
 
   return (
     <main className="page-frame cabinet-page">
@@ -112,7 +110,7 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
                   <small>ТВОЯ ПРОГРАМА</small>
                   <strong>{course.ageLabel}</strong>
                   <em>
-                    {course.duration} <i /> Тариф «{plan.name}»
+                    {course.duration} <i /> Відеокурс онлайн
                   </em>
                 </span>
               </div>
@@ -142,58 +140,21 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
 
       <section className="cabinet-schedule-section" aria-labelledby="schedule-title">
         <div className="container">
-          {plan.meetingAccess ? (
-            <div className="live-meeting-card">
-              <div className="meeting-icon">
-                <Icon name="video" size={27} />
-              </div>
-              <div className="meeting-main">
-                <div className="meeting-kicker">
-                  <span className="status-dot" /> Живі зустрічі з куратором <span className="meeting-divider">/</span> ТАРИФ «{plan.name.toUpperCase()}»
-                </div>
-                <h2 id="schedule-title">Твоє місце за спільним столом.</h2>
-                <p>Практична групова зустріч щосереди. Готуй запитання по поточному семестру — розберемо їх разом.</p>
-                <div className="meeting-meta">
-                  <span>
-                    <Icon name="calendar" size={17} /> Щосереди
-                  </span>
-                  <span>
-                    <Icon name="clock" size={17} /> 18:30 за Києвом
-                  </span>
-                  <span>
-                    <Icon name="users" size={17} /> Група з куратором
-                  </span>
-                </div>
-                {plan.id === "vip" && (
-                  <div className="vip-session-note">
-                    <Icon name="spark" size={16} /> VIP: чотири індивідуальні консультації узгоджуються окремо з куратором.
-                  </div>
-                )}
-                <p className="meeting-demo-note">Зустріч щосереди о 18:30 за Києвом. Посилання одне для групи.</p>
-              </div>
-              <div className="meeting-action">
-                <span className="meeting-next-label">GOOGLE MEET</span>
-                <a className="button button-gold" href={meetingLink} target="_blank" rel="noreferrer">
-                  Приєднатися до зустрічі <Icon name="external" size={16} />
-                </a>
-                <span>meet.google.com/abi-iktq-oam</span>
-              </div>
+          <div className="no-meeting-card">
+            <span className="no-meeting-icon">
+              <Icon name="play" size={25} />
+            </span>
+            <div>
+              <span className="no-meeting-label">ТІЛЬКИ ОНЛАЙН</span>
+              <h2 id="schedule-title">Уроки у відео, у своєму темпі.</h2>
+              <p>
+                Очних занять і прямих ефірів немає. Дивись записи в кабінеті, здавай завдання і пиши куратору, коли потрібен фідбек.
+              </p>
             </div>
-          ) : (
-            <div className="no-meeting-card">
-              <span className="no-meeting-icon">
-                <Icon name="book" size={25} />
-              </span>
-              <div>
-                <span className="no-meeting-label">ТАРИФ «СТАРТ»</span>
-                <h2 id="schedule-title">Навчайся у власному темпі.</h2>
-                <p>Живі зустрічі з куратором не входять до цього тарифу. Доступні відеоуроки, робочі матеріали та спільнота студентів.</p>
-              </div>
-              <Link className="button button-outline" to="/" hash="pricing">
-                Переглянути формати <Icon name="arrow" size={16} />
-              </Link>
-            </div>
-          )}
+            <a className="button button-outline" href="#videos">
+              До відеоуроків <Icon name="arrow" size={16} />
+            </a>
+          </div>
         </div>
       </section>
 
@@ -225,9 +186,9 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
               <p className="eyebrow eyebrow-dark">
                 <span className="eyebrow-line" /> Відеобібліотека
               </p>
-              <h2 id="videos-title">ЗАПИСИ УРОКІВ І ЗУСТРІЧЕЙ</h2>
+              <h2 id="videos-title">ЗАПИСИ ВІДЕОУРОКІВ</h2>
             </div>
-            <p className="video-library-intro">Записи відеоуроків і живих зустрічей з’являтимуться тут після занять.</p>
+            <p className="video-library-intro">Усі заняття — записи. Нові відео з’являються тут по семестрах.</p>
           </div>
           <div className="video-grid">
             <article className="curator-placeholder-card">
@@ -261,7 +222,7 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
               <span className="eyebrow-line" /> Ми поруч
             </p>
             <h2>Потрібна допомога?</h2>
-            <p>Куратор підкаже, з якої теми програми «{course.ageLabel}» почати і як підготуватися до зустрічі.</p>
+            <p>Куратор підкаже, з якої теми програми «{course.ageLabel}» почати. Відповідь буде в Telegram, не на очному занятті.</p>
           </div>
           <a className="button button-outline" href={contactLink} target="_blank" rel="noreferrer">
             Написати куратору <Icon name="arrow" size={16} />

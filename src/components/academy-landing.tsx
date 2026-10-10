@@ -6,21 +6,18 @@ import { Logo } from "@/components/logo";
 import { createLocalPurchase } from "@/lib/demo-store";
 import {
   courses,
+  courseBase,
+  coursePrice,
   formatMoney,
   getCourse,
-  getPlan,
-  planPrice,
-  programFloor,
+  programBenefits,
   readings,
-  ANNUAL_COST_PER_STUDENT,
-  plans,
+  YEAR_COST,
   type CourseId,
-  type PlanId,
 } from "@/lib/school";
 
 type OrderDetails = {
   courseId: CourseId;
-  planId: PlanId;
 };
 
 const benefits = [
@@ -31,8 +28,8 @@ const benefits = [
   },
   {
     icon: "users" as const,
-    title: "Куратори",
-    text: "У тарифах «Менторство» і «VIP» — живі зустрічі та розбір запитань по семестру.",
+    title: "Куратор у чаті",
+    text: "Письмовий фідбек на завдання і зв’язок у Telegram. Занять наживо немає — тільки відео.",
   },
   {
     icon: "briefcase" as const,
@@ -64,11 +61,11 @@ const questions = [
   {
     question: "Як проходить навчання?",
     answer:
-      "Уроки відкриваються в особистому кабінеті за семестрами. У тарифах «Менторство» і «VIP» додаються живі зустрічі з куратором, розбір запитань і фідбек на завдання.",
+      "Тільки онлайн і тільки відео. Уроки відкриваються в особистому кабінеті за семестрами, у своєму темпі. Куратор відповідає письмово і в Telegram, без очних занять і прямих ефірів.",
   },
   {
     question: "Чи можна змінити вікову програму під час запису?",
-    answer: "Так. Вік обирається на сайті і ще раз у формі — тариф прив’язується до конкретної програми.",
+    answer: "Так. Вік обирається на сайті і ще раз у формі. Ціна прив’язана до програми, окремих тарифів немає.",
   },
   {
     question: "Чи списуються гроші на сайті?",
@@ -86,7 +83,6 @@ export function AcademyLanding() {
 
   const selectedCourse = getCourse(selectedCourseId) ?? courses[1];
   const orderCourse = order ? getCourse(order.courseId) : undefined;
-  const orderPlan = order ? getPlan(order.planId) : undefined;
 
   useEffect(() => {
     if (!order) return;
@@ -108,10 +104,10 @@ export function AcademyLanding() {
     document.getElementById(scrollTo)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const openOrder = (planId: PlanId, courseId: CourseId = selectedCourseId) => {
+  const openOrder = (courseId: CourseId = selectedCourseId) => {
     setFormError("");
     setSelectedCourseId(courseId);
-    setOrder({ planId, courseId });
+    setOrder({ courseId });
     setMobileMenuOpen(false);
   };
 
@@ -126,7 +122,7 @@ export function AcademyLanding() {
     try {
       const local = createLocalPurchase({
         courseId: order.courseId,
-        planId: order.planId,
+        planId: "start",
         buyerName: name,
         buyerEmail: email.toLowerCase(),
       });
@@ -172,18 +168,18 @@ export function AcademyLanding() {
               Література
             </a>
             <a href="#pricing" onClick={() => setMobileMenuOpen(false)}>
-              Тарифи
+              Вартість
             </a>
             <button
               className="button button-gold nav-mobile-cta"
               type="button"
-              onClick={() => openOrder("mentorship")}
+              onClick={() => openOrder()}
             >
               Записатися <Icon name="arrow" size={16} />
             </button>
           </nav>
 
-          <button className="button button-gold header-cta" type="button" onClick={() => openOrder("mentorship")}>
+          <button className="button button-gold header-cta" type="button" onClick={() => openOrder()}>
             Записатися <Icon name="arrow" size={16} />
           </button>
         </div>
@@ -232,8 +228,9 @@ export function AcademyLanding() {
               <div>
                 <Icon name="users" size={24} />
                 <span>
-                  Живі зустрічі
-                  <br />з кураторами
+                  Відеоуроки
+                  <br />
+                  тільки онлайн
                 </span>
               </div>
               <div>
@@ -362,7 +359,7 @@ export function AcademyLanding() {
                   {selectedCourse.semesters.length === 3 ? "семестри" : "семестри"}
                 </span>
                 <button className="button button-gold" type="button" onClick={() => selectAge(selectedCourse.id, "pricing")}>
-                  Тарифи для цього віку <Icon name="arrow" size={16} />
+                  Вартість для цього віку <Icon name="arrow" size={16} />
                 </button>
               </div>
             </div>
@@ -470,105 +467,74 @@ export function AcademyLanding() {
               <p className="eyebrow">
                 <span className="eyebrow-line" /> Інвестиція у себе
               </p>
-              <h2 id="pricing-title">ОБЕРИ СВІЙ ФОРМАТ</h2>
+              <h2 id="pricing-title">ОБЕРИ СВІЙ ВІК</h2>
               <p className="pricing-lead">
-                Спочатку вік, потім формат: самостійно з відео
-                <br className="desktop-break" /> або з живими зустрічами куратора.
+                Один формат для всіх: онлайн-відеокурс.
+                <br className="desktop-break" /> Ціна залежить лише від вікової програми.
               </p>
-            </div>
-            <div className="pricing-program-select">
-              <span id="pricing-age-label">Вікова категорія</span>
-              <div className="age-switch age-switch-stack" role="radiogroup" aria-labelledby="pricing-age-label">
-                {courses.map((course) => (
-                  <button
-                    key={course.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={selectedCourseId === course.id}
-                    className={`age-pill${selectedCourseId === course.id ? " is-active" : ""}`}
-                    onClick={() => setSelectedCourseId(course.id)}
-                  >
-                    <strong>{course.ageLabel}</strong>
-                    <span>{course.duration}</span>
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
 
-          <p className="pricing-course-line">
-            Тарифи для програми <strong>{selectedCourse.ageLabel}</strong> · {selectedCourse.duration} · підлога{" "}
-            {formatMoney(programFloor(selectedCourse.id))} ₴
-          </p>
-
           <div className="pricing-grid">
-            {plans.map((plan) => {
-              const price = planPrice(plan.id, selectedCourse.id);
+            {courses.map((course) => {
+              const price = coursePrice(course.id);
+              const featured = course.id === "age-16-30";
               return (
-              <article className={`price-card${plan.featured ? " price-card-featured" : ""}`} key={plan.id}>
-                {plan.featured && (
-                  <div className="popular-ribbon">
-                    <Icon name="spark" size={14} /> НАЙЧАСТІШЕ ОБИРАЮТЬ
+                <article className={`price-card${featured ? " price-card-featured" : ""}`} key={course.id}>
+                  <div className="price-card-top">
+                    <span className="price-label">{course.duration} · тільки відео</span>
+                    <h3>{course.ageLabel}</h3>
+                    <p>{course.description}</p>
                   </div>
-                )}
-                <div className="price-card-top">
-                  <span className="price-label">{plan.subtitle}</span>
-                  <h3>{plan.name}</h3>
-                  <p>{plan.description}</p>
-                </div>
-                <ul className="plan-benefits">
-                  {plan.benefits.map((benefit) => (
-                    <li key={benefit}>
-                      <span className="check-mark">
-                        <Icon name="check" size={13} />
-                      </span>
-                      <span>{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="price-card-bottom">
-                  <div className="price-value">
-                    <strong>
-                      {formatMoney(price)} <small>₴</small>
-                    </strong>
+                  <ul className="plan-benefits">
+                    {programBenefits.map((benefit) => (
+                      <li key={benefit}>
+                        <span className="check-mark">
+                          <Icon name="check" size={13} />
+                        </span>
+                        <span>{benefit}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="price-card-bottom">
+                    <div className="price-value">
+                      <strong>
+                        {formatMoney(price)} <small>₴</small>
+                      </strong>
+                    </div>
+                    <span className="price-caption">
+                      база {formatMoney(courseBase(course.id))} ₴ · податок 6% · прибуток 20%
+                    </span>
+                    <button className={`button ${featured ? "button-gold" : "button-dark-outline"} price-button`} type="button" onClick={() => openOrder(course.id)}>
+                      Обрати програму <Icon name="arrow" size={16} />
+                    </button>
+                    <span className="price-note">
+                      Демо-запис без оплати <span>·</span> кабінет одразу
+                    </span>
                   </div>
-                  <span className="price-caption">
-                    за всю програму · {selectedCourse.duration} · +{Math.round(plan.markup * 100)}% до собівартості
-                  </span>
-                  <button
-                    className={`button ${plan.featured ? "button-gold" : "button-dark-outline"} price-button`}
-                    type="button"
-                    onClick={() => openOrder(plan.id)}
-                  >
-                    Обрати тариф <Icon name="arrow" size={16} />
-                  </button>
-                  <span className="price-note">
-                    Демо-запис без оплати <span>·</span> кабінет одразу
-                  </span>
-                </div>
-              </article>
+                </article>
               );
             })}
           </div>
           <div className="pricing-footnote">
             <Icon name="shield" size={17} />
             <span>
-              Рік навчання при 150 учнях коштує {formatMoney(ANNUAL_COST_PER_STUDENT)} ₴. До 16 множимо на 1,5 року, програми 16+ — на 2. Старт +20%, Менторство +55%, VIP +110%. Оплата на сайті ще не списується.
+              База року — {formatMoney(YEAR_COST)} ₴. До 16 це ×1,5, програми 16+ лишаються на {formatMoney(YEAR_COST)} ₴. Далі +20% прибутку і ціна з урахуванням 6% податку (5% єдиний + 1% військовий). Оплата на сайті не списується.
             </span>
           </div>
           <div className="demo-cabinets">
             <span className="demo-cabinets-label">Хочете одразу зазирнути всередину?</span>
             <div className="demo-cabinets-links">
-              <Link to="/cabinet/$purchaseId" params={{ purchaseId: "demo-start" }}>
-                Демо: Старт
+              <Link to="/cabinet/$purchaseId" params={{ purchaseId: "demo-mentorship" }}>
+                Демо: до 16
               </Link>
               <span>·</span>
-              <Link to="/cabinet/$purchaseId" params={{ purchaseId: "demo-mentorship" }}>
-                Демо: Менторство
+              <Link to="/cabinet/$purchaseId" params={{ purchaseId: "demo-start" }}>
+                Демо: 16–30
               </Link>
               <span>·</span>
               <Link to="/cabinet/$purchaseId" params={{ purchaseId: "demo-vip" }}>
-                Демо: VIP
+                Демо: 30–60+
               </Link>
             </div>
           </div>
@@ -614,7 +580,7 @@ export function AcademyLanding() {
               ВПЕВНЕНОГО КРОКУ
             </h2>
             <p>Коротко про вік, семестри і те, як відкривається кабінет.</p>
-            <button className="button button-outline" type="button" onClick={() => openOrder("mentorship")}>
+            <button className="button button-outline" type="button" onClick={() => openOrder()}>
               Записатися <Icon name="arrow" size={16} />
             </button>
           </div>
@@ -653,7 +619,7 @@ export function AcademyLanding() {
             <br />
             Можна змінити вік у формі запису.
           </p>
-          <button className="button button-gold" type="button" onClick={() => openOrder("mentorship")}>
+          <button className="button button-gold" type="button" onClick={() => openOrder()}>
             Записатися на програму <Icon name="arrow" size={16} />
           </button>
         </div>
@@ -672,7 +638,7 @@ export function AcademyLanding() {
             <a href="#programs">Програми</a>
             <a href="#syllabus">Маршрут</a>
             <a href="#library">Література</a>
-            <a href="#pricing">Тарифи</a>
+            <a href="#pricing">Вартість</a>
             <a href="#contacts">Контакти</a>
           </nav>
           <div className="footer-socials" aria-label="Соціальні мережі">
@@ -694,7 +660,7 @@ export function AcademyLanding() {
         </div>
       </footer>
 
-      {order && orderCourse && orderPlan && (
+      {order && orderCourse && (
         <div
           className="modal-backdrop"
           onClick={(event) => {
@@ -726,7 +692,7 @@ export function AcademyLanding() {
                     key={course.id}
                     type="button"
                     className={`age-pill${order.courseId === course.id ? " is-active" : ""}`}
-                    onClick={() => setOrder({ ...order, courseId: course.id })}
+                    onClick={() => setOrder({ courseId: course.id })}
                   >
                     <strong>{course.ageLabel}</strong>
                     <span>{course.duration}</span>
@@ -738,7 +704,7 @@ export function AcademyLanding() {
               <span>
                 {orderCourse.ageLabel}
                 <small>
-                  Тариф «{orderPlan.name}» · {formatMoney(planPrice(order.planId, order.courseId))} ₴ · {orderCourse.duration}
+                  Відеокурс · {formatMoney(coursePrice(order.courseId))} ₴ · {orderCourse.duration}
                 </small>
               </span>
               <span>

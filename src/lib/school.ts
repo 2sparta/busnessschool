@@ -241,84 +241,53 @@ export const courses = [
 export type CourseId = (typeof courses)[number]["id"];
 export type Course = (typeof courses)[number];
 
-/** 2 184 000 грн витрат на рік ÷ 150 учнів. У таблиці це ціна одного року. */
-export const ANNUAL_COST_PER_STUDENT = 14_560;
+/** Мінімальна ціна одного року. До 16 множиться на 1,5; програми 16+ лишаються на цій сумі. */
+export const YEAR_COST = 7_820;
+/** 5% єдиного податку + 1% військового збору від виручки. */
+export const TAX_RATE = 0.06;
+export const PROFIT_RATE = 0.2;
 
-const PROGRAM_YEARS: Record<CourseId, number> = {
-  "under-16": 1.5,
-  "age-16-30": 2,
-  "age-30-60": 2,
-};
+export function courseBase(courseId: CourseId) {
+  return courseId === "under-16" ? YEAR_COST * 1.5 : YEAR_COST;
+}
+
+/** База + 20% прибутку, потім ціна піднімається так, щоб 6% податку не з’їли цей прибуток. */
+export function coursePrice(courseId: CourseId) {
+  const withProfit = courseBase(courseId) * (1 + PROFIT_RATE);
+  return Math.round(withProfit / (1 - TAX_RATE) / 10) * 10;
+}
+
+export const programBenefits = [
+  "Усі відеоуроки програми, семестр за семестром",
+  "Конспекти і робочі зошити до кожної теми",
+  "Практичні завдання з орієнтиром, як перевірити себе",
+  "Письмовий фідбек куратора на завдання",
+  "Добірка літератури і офіційних матеріалів",
+  "Доступ на весь строк програми",
+  "Закрита спільнота студентів вашого віку",
+  "Пріоритет у навчальному чаті",
+  "Нагадування, на якому семестрі ви зараз",
+  "Зв’язок із куратором у Telegram",
+  "Оновлення уроків, поки діє доступ",
+] as const;
 
 export const plans = [
   {
     id: "start",
     name: "Старт",
-    subtitle: "У власному темпі",
-    markup: 0.2,
-    featured: false,
     meetingAccess: false,
-    description: "Повна програма відеоуроками. Ціна — собівартість групи плюс невеликий запас.",
-    benefits: [
-      "Усі відеоуроки програми, семестр за семестром",
-      "Конспекти і робочі зошити до кожної теми",
-      "Практичні завдання з орієнтиром, як перевірити себе",
-      "Добірка літератури і офіційних матеріалів",
-      "Доступ на весь строк програми, не на один місяць",
-      "Закрита спільнота студентів вашого віку",
-      "Чат команди, якщо застрягли на темі",
-      "Оновлення уроків, поки діє доступ",
-    ],
-  },
-  {
-    id: "mentorship",
-    name: "Менторство",
-    subtitle: "Найчастіший вибір",
-    markup: 0.55,
-    featured: true,
-    meetingAccess: true,
-    description: "Те саме навчання плюс живі зустрічі й фідбек. Націнка закриває час куратора.",
-    benefits: [
-      "Усе, що входить у тариф «Старт»",
-      "Щотижнева зустріч у Google Meet",
-      "Розбір запитань і домашніх кейсів на зустрічі",
-      "Письмовий фідбек куратора на завдання",
-      "Записи зустрічей, якщо пропустили ефір",
-      "Конспекти після живих занять",
-      "Пріоритет у навчальному чаті",
-      "Нагадування, на якому семестрі ви зараз",
-      "Зв’язок із куратором у Telegram",
-    ],
-  },
-  {
-    id: "vip",
-    name: "VIP",
-    subtitle: "Максимум уваги до вас",
-    markup: 1.1,
-    featured: false,
-    meetingAccess: true,
-    description: "Менторство і окремий маршрут: консультації, план і приватний чат.",
-    benefits: [
-      "Усе, що входить у тариф «Менторство»",
-      "4 особисті консультації з куратором",
-      "Розбір вашої ситуації: бюджет, кредит, ФОП або пенсія",
-      "Персональний фінансовий план на 90 днів",
-      "Проміжний зріз раз на семестр: що вже змінилось",
-      "Приватний чат із куратором",
-      "Пріоритетний запис на живі зустрічі",
-      "Допомога скласти питання до банку, брокера чи бухгалтера",
-    ],
+    benefits: programBenefits,
   },
 ] as const;
 
-export type PlanId = (typeof plans)[number]["id"];
+export type PlanId = "start" | "mentorship" | "vip";
 
 export function isCourseId(value: unknown): value is CourseId {
   return typeof value === "string" && courses.some((course) => course.id === value);
 }
 
 export function isPlanId(value: unknown): value is PlanId {
-  return typeof value === "string" && plans.some((plan) => plan.id === value);
+  return value === "start" || value === "mentorship" || value === "vip";
 }
 
 export function getCourse(courseId: string) {
@@ -326,7 +295,8 @@ export function getCourse(courseId: string) {
 }
 
 export function getPlan(planId: string) {
-  return plans.find((plan) => plan.id === planId);
+  if (!isPlanId(planId)) return undefined;
+  return plans[0];
 }
 
 export function lessonsFor(courseId: CourseId) {
@@ -338,16 +308,6 @@ export function lessonsFor(courseId: CourseId) {
       detail: `${semester.label} · ${semester.period}`,
     })),
   );
-}
-
-export function programFloor(courseId: CourseId) {
-  return Math.round(ANNUAL_COST_PER_STUDENT * PROGRAM_YEARS[courseId]);
-}
-
-export function planPrice(planId: PlanId, courseId: CourseId) {
-  const plan = plans.find((item) => item.id === planId);
-  const raw = programFloor(courseId) * (1 + (plan?.markup ?? 0));
-  return Math.round(raw / 100) * 100;
 }
 
 export function formatMoney(amount: number) {
