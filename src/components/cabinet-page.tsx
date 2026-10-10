@@ -168,7 +168,7 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
               <span className="mentor-message-label">ВІД КУРАТОРА</span>
             </div>
             <Icon name="quote" size={25} />
-            <h2>Один семестр за раз. Ясність приходить у процесі.</h2>
+            <h2>лад у грошах, лад у житті!.</h2>
             <p>
               Програма «{course.ageLabel}» зібрана під твій етап життя. Не перестрибуй усе одразу — закрий першу тему і рухайся далі.
             </p>
