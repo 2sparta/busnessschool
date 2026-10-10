@@ -6,11 +6,10 @@ import { Logo } from "@/components/logo";
 import { createLocalPurchase } from "@/lib/demo-store";
 import {
   courses,
-  courseBase,
   coursePrice,
   formatMoney,
   getCourse,
-  programBenefits,
+  benefitsByCourse,
   readings,
   YEAR_COST,
   type CourseId,
@@ -487,7 +486,7 @@ export function AcademyLanding() {
                     <p>{course.description}</p>
                   </div>
                   <ul className="plan-benefits">
-                    {programBenefits.map((benefit) => (
+                    {benefitsByCourse[course.id].map((benefit) => (
                       <li key={benefit}>
                         <span className="check-mark">
                           <Icon name="check" size={13} />
@@ -502,9 +501,6 @@ export function AcademyLanding() {
                         {formatMoney(price)} <small>₴</small>
                       </strong>
                     </div>
-                    <span className="price-caption">
-                      база {formatMoney(courseBase(course.id))} ₴ · податок 6% · прибуток 20%
-                    </span>
                     <button className={`button ${featured ? "button-gold" : "button-dark-outline"} price-button`} type="button" onClick={() => openOrder(course.id)}>
                       Обрати програму <Icon name="arrow" size={16} />
                     </button>
@@ -519,7 +515,7 @@ export function AcademyLanding() {
           <div className="pricing-footnote">
             <Icon name="shield" size={17} />
             <span>
-              База року — {formatMoney(YEAR_COST)} ₴. До 16 це ×1,5, програми 16+ лишаються на {formatMoney(YEAR_COST)} ₴. Далі +20% прибутку і ціна з урахуванням 6% податку (5% єдиний + 1% військовий). Оплата на сайті не списується.
+              Ціна за всю програму: рік коштує {formatMoney(YEAR_COST)} ₴, до 16 це 1,5 року, програми 16+ — 2 роки. Оплата на сайті не списується.
             </span>
           </div>
           <div className="demo-cabinets">

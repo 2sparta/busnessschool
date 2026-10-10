@@ -60,6 +60,7 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
     .join("");
   const firstName = purchase.buyerName.trim().split(/\s+/)[0] || "студенте";
   const contactLink = "https://t.me/SERSTRU";
+  const meetingLink = "https://meet.google.com/ndx-wsoe-epm";
 
   return (
     <main className="page-frame cabinet-page">
@@ -148,11 +149,11 @@ export function CabinetPage({ purchaseId }: { purchaseId: string }) {
               <span className="no-meeting-label">ТІЛЬКИ ОНЛАЙН</span>
               <h2 id="schedule-title">Уроки у відео, у своєму темпі.</h2>
               <p>
-                Очних занять і прямих ефірів немає. Дивись записи в кабінеті, здавай завдання і пиши куратору, коли потрібен фідбек.
+                Уроки лишаються у відео. Коли є спільна зустріч — заходь за посиланням нижче.
               </p>
             </div>
-            <a className="button button-outline" href="#videos">
-              До відеоуроків <Icon name="arrow" size={16} />
+            <a className="button button-gold" href={meetingLink} target="_blank" rel="noreferrer">
+              Приєднатися до зустрічі <Icon name="external" size={16} />
             </a>
           </div>
         </div>
